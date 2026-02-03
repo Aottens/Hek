@@ -1,0 +1,90 @@
+// Main_OB1.scl
+// Hoofdprogramma - cyclische uitvoering
+// Aanroepvolgorde per CODE-01: FC_Veiligheid -> FB_HekBesturing -> FC_Outputs
+//
+// Dit is het centrale organisatieblok (OB1) dat elke PLC-cyclus wordt uitgevoerd.
+// De blokken worden in vaste volgorde aangeroepen om correcte dataflow te garanderen:
+// 1. Veiligheid eerst - bepaalt of beweging is toegestaan
+// 2. State machine - bepaalt toestand en motorcommando's
+// 3. Outputs laatste - zet fysieke uitgangen
+
+ORGANIZATION_BLOCK "Main"
+TITLE = Hoofdprogramma cyclus
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+   VAR_TEMP
+      t_OB1_Info : Array[0..19] of Byte;   // OB1 systeeminformatie
+
+      // Tussenresultaten veiligheidsverwerking
+      t_PBV_Trigger : Bool;
+      t_VS_Trigger : Bool;
+      t_Fault : Bool;
+
+      // Tussenresultaten state machine
+      t_MS_Open : Bool;
+      t_MS_Dicht : Bool;
+      t_MS_LaagToeren : Bool;
+      t_AlarmKerk : Bool;
+      t_HuidigeToestand : Int;
+   END_VAR
+
+BEGIN
+    // =========================================================================
+    // STAP 1: VEILIGHEIDSVERWERKING (prioriteit: FAULT > PBV > VS)
+    // =========================================================================
+    // FC_Veiligheid verwerkt alle veiligheidssensoren en bepaalt triggers.
+    // Moet als eerste worden uitgevoerd zodat state machine actuele veiligheidsinfo heeft.
+
+    "FC_Veiligheid"(
+        i_PBV_BeweegbaarHek := %I1.2,    // Persoonsbeveiliging beweegbaar hek
+        i_VS_Voertuig := %I1.3,          // Voertuigdetectie lichtsluis
+        i_BNS_Open := %I0.7,             // Benaderingsschakelaar OPEN
+        i_BNS_Dicht := %I1.0,            // Benaderingsschakelaar DICHT
+        q_PBV_Trigger => #t_PBV_Trigger,
+        q_VS_Trigger => #t_VS_Trigger,
+        q_Fault => #t_Fault
+    );
+
+    // =========================================================================
+    // STAP 2: TOESTANDSMACHINE (hekbesturing logica)
+    // =========================================================================
+    // FB_HekBesturing bevat de 9-state machine per FDS sectie 2.2.
+    // Ontvangt veiligheidstriggers van FC_Veiligheid en operator inputs.
+    // Produceert motorcommando's en alarmstatus.
+
+    "FB_HekBesturing"."DB_HekData"(
+        i_SS_Open := %I0.1,              // Sleutelschakelaar OPEN
+        i_SS_Dicht := %I0.3,             // Sleutelschakelaar DICHT
+        i_DK_Bediening := %I0.2,         // Drukknop bediening (NC: 0=ingedrukt)
+        i_BNS_Open := %I0.7,             // Benaderingsschakelaar OPEN
+        i_BNS_Dicht := %I1.0,            // Benaderingsschakelaar DICHT
+        i_PBV_Trigger := #t_PBV_Trigger,
+        i_VS_Trigger := #t_VS_Trigger,
+        i_Fault := #t_Fault,
+        q_MS_Open => #t_MS_Open,
+        q_MS_Dicht => #t_MS_Dicht,
+        q_MS_LaagToeren => #t_MS_LaagToeren,
+        q_AlarmKerk => #t_AlarmKerk,
+        q_HuidigeToestand => #t_HuidigeToestand
+    );
+
+    // =========================================================================
+    // STAP 3: OUTPUT MAPPING (fysieke uitgangen)
+    // =========================================================================
+    // FC_Outputs vertaalt interne commando's naar fysieke adressen.
+    // Moet als laatste worden uitgevoerd na alle logica.
+
+    "FC_Outputs"(
+        i_HuidigeToestand := #t_HuidigeToestand,
+        i_MS_Open := #t_MS_Open,
+        i_MS_Dicht := #t_MS_Dicht,
+        i_MS_LaagToeren := #t_MS_LaagToeren,
+        i_AlarmKerk := #t_AlarmKerk,
+        q_MS_Open => %Q0.4,              // Motor richting OPEN
+        q_MS_Dicht => %Q0.5,             // Motor richting DICHT
+        q_MS_LaagToeren => %Q0.6,        // Motor lage snelheid
+        q_AlarmKerk => %Q0.3             // Kerkalarm
+    );
+
+END_ORGANIZATION_BLOCK

@@ -1,0 +1,43 @@
+// FC_Outputs.scl
+// Output mapping op basis van toestand
+// Vertaalt interne commando's naar fysieke uitgangen
+//
+// Deze functie zorgt voor een clean scheiding tussen logica (FB_HekBesturing)
+// en fysieke I/O, waardoor testen en simulatie eenvoudiger worden.
+//
+// Fysieke adressen (ter referentie):
+// %Q0.3 = q_AlarmKerk    (0=hek dicht, 1=hek niet dicht)
+// %Q0.4 = q_MS_Open      (1=motor open actief)
+// %Q0.5 = q_MS_Dicht     (1=motor dicht actief)
+// %Q0.6 = q_MS_LaagToeren (1=lage snelheid actief)
+
+FUNCTION "FC_Outputs" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+   VAR_INPUT
+      i_HuidigeToestand : Int;       // Huidige toestand van FB_HekBesturing
+      i_MS_Open : Bool;              // Motor open commando
+      i_MS_Dicht : Bool;             // Motor dicht commando
+      i_MS_LaagToeren : Bool;        // Lage snelheid commando
+      i_AlarmKerk : Bool;            // Alarm commando
+   END_VAR
+
+   VAR_OUTPUT
+      q_MS_Open : Bool;              // %Q0.4 Motor sturing richting OPEN
+      q_MS_Dicht : Bool;             // %Q0.5 Motor sturing richting DICHT
+      q_MS_LaagToeren : Bool;        // %Q0.6 Motor lage snelheid
+      q_AlarmKerk : Bool;            // %Q0.3 Kerkalarm
+   END_VAR
+
+BEGIN
+    // Stub implementatie - directe doorgifte
+    // Volledige output logica in Phase 4
+    // Hier kunnen interlock checks en fail-safe logica worden toegevoegd
+
+    #q_MS_Open := #i_MS_Open;
+    #q_MS_Dicht := #i_MS_Dicht;
+    #q_MS_LaagToeren := #i_MS_LaagToeren;
+    #q_AlarmKerk := #i_AlarmKerk;
+
+END_FUNCTION
