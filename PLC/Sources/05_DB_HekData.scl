@@ -1,0 +1,14 @@
+// DB_HekData.scl
+// Instance datablock voor FB_HekBesturing
+// Bevat alle statische variabelen van de state machine instantie
+//
+// Dit is een instance DB: de structuur wordt automatisch afgeleid
+// van FB_HekBesturing. Wijzig de FB voor structuurwijzigingen.
+
+DATA_BLOCK "DB_HekData"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+"FB_HekBesturing"
+BEGIN
+END_DATA_BLOCK

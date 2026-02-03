@@ -1,0 +1,63 @@
+// FB_HekBesturing.scl
+// Toestandsmachine voor hekbesturing - 9 toestanden per FDS sectie 2.2
+// Hoofdlogica voor automatisch hek met veiligheidsprioriteiten
+//
+// Toestanden (per DB_States):
+// 0 = HOMING      - Zoeken referentiepositie bij opstart
+// 1 = IDLE_OPEN   - Hek volledig open, motor uit
+// 2 = IDLE_DICHT  - Hek volledig dicht, alarm aan
+// 3 = MOVING_OPEN - Beweging richting open
+// 4 = MOVING_DICHT- Beweging richting dicht
+// 5 = STOPPED     - Gestopt in tussenpositie
+// 6 = VS_PAUSE    - Gepauzeerd door lichtsluis
+// 7 = PBV_RETRACT - Terugtrekken na bumperactivatie
+// 8 = FAULT       - Sensorstoring gedetecteerd
+
+FUNCTION_BLOCK "FB_HekBesturing"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+   VAR_INPUT
+      i_SS_Open : Bool;              // Sleutelschakelaar naar OPEN (1=contact)
+      i_SS_Dicht : Bool;             // Sleutelschakelaar naar DICHT (1=contact)
+      i_DK_Bediening : Bool;         // Drukknop bediening (NC: 0=ingedrukt)
+      i_BNS_Open : Bool;             // Benaderingsschakelaar OPEN (NC: 0=bereikt)
+      i_BNS_Dicht : Bool;            // Benaderingsschakelaar DICHT (NC: 0=bereikt)
+      i_PBV_Trigger : Bool;          // PBV actief (van FC_Veiligheid)
+      i_VS_Trigger : Bool;           // VS actief (van FC_Veiligheid)
+      i_Fault : Bool;                // Sensordefect (van FC_Veiligheid)
+   END_VAR
+
+   VAR_OUTPUT
+      q_MS_Open : Bool;              // Motor sturing richting OPEN
+      q_MS_Dicht : Bool;             // Motor sturing richting DICHT
+      q_MS_LaagToeren : Bool;        // Motor lage snelheid actief
+      q_AlarmKerk : Bool;            // Kerkalarm (0=hek dicht, 1=hek niet dicht)
+      q_HuidigeToestand : Int;       // Huidige toestand voor diagnose/HMI
+   END_VAR
+
+   VAR
+      m_Toestand : Int;              // Huidige toestand van de state machine
+      m_VorigeToestand : Int;        // Vorige toestand (voor transitie detectie)
+      m_LaatsteRichting : Int;       // Laatst actieve richting (DIR_OPEN=1, DIR_DICHT=2)
+   END_VAR
+
+BEGIN
+    // Stub implementatie - volledige state machine implementatie in Phase 3
+    // Hier worden alle 9 toestanden en transities uitgewerkt
+
+    // Initialiseer alle motor uitgangen naar veilige staat
+    #q_MS_Open := FALSE;
+    #q_MS_Dicht := FALSE;
+    #q_MS_LaagToeren := FALSE;
+
+    // Kerkalarm: fail-safe logica
+    // 0 = hek is dicht (veilig)
+    // 1 = hek is niet dicht (alarm actief)
+    // Bij stub: alarm altijd aan (veilige default)
+    #q_AlarmKerk := TRUE;
+
+    // Diagnose uitgang: huidige toestand beschikbaar voor HMI
+    #q_HuidigeToestand := #m_Toestand;
+
+END_FUNCTION_BLOCK

@@ -1,0 +1,40 @@
+// FC_Veiligheid.scl
+// Veiligheidsverwerking voor automatisch hek
+// Verwerkt PBV (persoonsbeveiligingsbumper), VS (veilig sluiten), en sensordefect detectie
+// Prioriteit: FAULT > PBV > VS
+
+FUNCTION "FC_Veiligheid" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+   VAR_INPUT
+      i_PBV_BeweegbaarHek : Bool;   // Persoonsbeveiliging beweegbaar hek (NC: 0=OK, 1=trigger)
+      i_VS_Voertuig : Bool;          // Voertuigdetectie lichtsluis (0=onderbroken)
+      i_BNS_Open : Bool;             // Benaderingsschakelaar OPEN positie (NC: 0=bereikt)
+      i_BNS_Dicht : Bool;            // Benaderingsschakelaar DICHT positie (NC: 0=bereikt)
+   END_VAR
+
+   VAR_OUTPUT
+      q_PBV_Trigger : Bool;          // PBV geactiveerd (gedebounced)
+      q_VS_Trigger : Bool;           // VS geactiveerd (gedebounced)
+      q_Fault : Bool;                // Sensordefect gedetecteerd
+   END_VAR
+
+   VAR_TEMP
+      t_BeidEindstanden : Bool;      // Hulpvariabele: beide eindstanden tegelijk actief
+   END_VAR
+
+BEGIN
+    // Stub implementatie - volledige implementatie in Phase 2
+    // Debouncing en foutdetectie wordt hier uitgewerkt
+
+    #q_PBV_Trigger := FALSE;
+    #q_VS_Trigger := FALSE;
+    #q_Fault := FALSE;
+
+    // Placeholder voor sensordefect detectie:
+    // Beide eindstanden tegelijk actief = sensordefect
+    #t_BeidEindstanden := (NOT #i_BNS_Open) AND (NOT #i_BNS_Dicht);
+    // q_Fault wordt in Phase 2 met debounce uitgewerkt
+
+END_FUNCTION
