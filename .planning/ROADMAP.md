@@ -59,10 +59,12 @@ Plans:
   5. PBV trigger retracts gate toward OPEN at low speed, ignoring operator input
   6. VS trigger pauses movement and auto-resumes after beam clear + delay
   7. Movement timeout (90s) transitions to STOPPED state
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Core structure, initialization, HOMING, IDLE, FAULT states
+- [ ] 03-02-PLAN.md — Control inputs, MOVING states, STOPPED, direction memory
+- [ ] 03-03-PLAN.md — VS_PAUSE, PBV_RETRACT, timeout integration, output assignments
 
 ### Phase 4: Integration
 **Goal**: Complete system with timer sequences, output mapping, and full OB1 orchestration
@@ -87,7 +89,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-03 |
 | 2. Safety Core | 2/2 | Complete | 2026-02-03 |
-| 3. State Machine | 0/? | Not started | - |
+| 3. State Machine | 0/3 | Planned | - |
 | 4. Integration | 0/? | Not started | - |
 
 ---
@@ -97,4 +99,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 *Phase 2 planned: 2026-02-03*
 *Phase 2 revised: 2026-02-03 (scope narrowed to trigger detection/priority)*
 *Phase 2 completed: 2026-02-03*
+*Phase 3 planned: 2026-02-03*
 *Coverage: 42/42 v1 requirements mapped*
