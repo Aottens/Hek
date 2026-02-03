@@ -56,21 +56,116 @@ VERSION : 0.1
    END_VAR
 
 BEGIN
-    // Stub implementatie - volledige state machine implementatie in Phase 3
-    // Hier worden alle 9 toestanden en transities uitgewerkt
+    // =========================================================================
+    // Edge detection - call BEFORE CASE statement (ensures edges detected once per scan)
+    // =========================================================================
+    #m_EdgeSS_Open(CLK := #i_SS_Open);
+    #m_EdgeSS_Dicht(CLK := #i_SS_Dicht);
+    #m_EdgeDK(CLK := #i_DK_Bediening);  // NC: falling edge = press
 
-    // Initialiseer alle motor uitgangen naar veilige staat
-    #q_MS_Open := FALSE;
-    #q_MS_Dicht := FALSE;
+    // =========================================================================
+    // Movement timeout timer - runs in HOMING, MOVING_OPEN, MOVING_DICHT
+    // =========================================================================
+    #m_TON_Timeout(IN := (#m_Toestand = "DB_States".STATE_HOMING) OR
+                          (#m_Toestand = "DB_States".STATE_MOVING_OPEN) OR
+                          (#m_Toestand = "DB_States".STATE_MOVING_DICHT),
+                   PT := "DB_Config".Timers.CFG_BewegingTimeoutS);
+
+    // =========================================================================
+    // Power-on initialization - determine initial state from endstops
+    // =========================================================================
+    IF #m_FirstScan THEN
+        #m_FirstScan := FALSE;
+        // NC sensors: 0 = reached, 1 = not reached
+        IF (NOT #i_BNS_Open) AND (NOT #i_BNS_Dicht) THEN
+            // Both endstops - sensor fault
+            #m_Toestand := "DB_States".STATE_FAULT;
+        ELSIF NOT #i_BNS_Dicht THEN
+            // At DICHT position
+            #m_Toestand := "DB_States".STATE_IDLE_DICHT;
+        ELSIF NOT #i_BNS_Open THEN
+            // At OPEN position
+            #m_Toestand := "DB_States".STATE_IDLE_OPEN;
+        ELSE
+            // Neither endstop - unknown position, need homing
+            #m_Toestand := "DB_States".STATE_HOMING;
+        END_IF;
+    END_IF;
+
+    // =========================================================================
+    // Save previous state (for transition detection in future plans)
+    // =========================================================================
+    #m_VorigeToestand := #m_Toestand;
+
+    // =========================================================================
+    // Main state machine CASE statement
+    // =========================================================================
+    CASE #m_Toestand OF
+        "DB_States".STATE_HOMING:
+            // Implemented in this plan (Task 3)
+            ;
+
+        "DB_States".STATE_IDLE_OPEN:
+            // Implemented in this plan (Task 3)
+            ;
+
+        "DB_States".STATE_IDLE_DICHT:
+            // Implemented in this plan (Task 3)
+            ;
+
+        "DB_States".STATE_MOVING_OPEN:
+            // Placeholder - Plan 03-02
+            ;
+
+        "DB_States".STATE_MOVING_DICHT:
+            // Placeholder - Plan 03-02
+            ;
+
+        "DB_States".STATE_STOPPED:
+            // Placeholder - Plan 03-02
+            ;
+
+        "DB_States".STATE_VS_PAUSE:
+            // Placeholder - Plan 03-03
+            ;
+
+        "DB_States".STATE_PBV_RETRACT:
+            // Placeholder - Plan 03-03
+            ;
+
+        "DB_States".STATE_FAULT:
+            // Implemented in this plan (Task 3)
+            ;
+
+        ELSE
+            // Unexpected state - recover to safe state
+            #m_Toestand := "DB_States".STATE_STOPPED;
+    END_CASE;
+
+    // =========================================================================
+    // Motor outputs based on state (direction only, low speed in Phase 4)
+    // =========================================================================
+    CASE #m_Toestand OF
+        "DB_States".STATE_MOVING_OPEN, "DB_States".STATE_PBV_RETRACT:
+            #q_MS_Open := TRUE;
+            #q_MS_Dicht := FALSE;
+
+        "DB_States".STATE_MOVING_DICHT, "DB_States".STATE_HOMING:
+            #q_MS_Open := FALSE;
+            #q_MS_Dicht := TRUE;
+
+        ELSE
+            #q_MS_Open := FALSE;
+            #q_MS_Dicht := FALSE;
+    END_CASE;
+
+    // Low speed placeholder (Phase 4)
     #q_MS_LaagToeren := FALSE;
 
-    // Kerkalarm: fail-safe logica
-    // 0 = hek is dicht (veilig)
-    // 1 = hek is niet dicht (alarm actief)
-    // Bij stub: alarm altijd aan (veilige default)
-    #q_AlarmKerk := TRUE;
+    // Alarm: only deactivated (0) when in IDLE_DICHT
+    #q_AlarmKerk := NOT (#m_Toestand = "DB_States".STATE_IDLE_DICHT);
 
-    // Diagnose uitgang: huidige toestand beschikbaar voor HMI
+    // Diagnostic output
     #q_HuidigeToestand := #m_Toestand;
 
 END_FUNCTION_BLOCK
