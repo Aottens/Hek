@@ -1,11 +1,19 @@
-// FC_Veiligheid.scl
+// FB_Veiligheid.scl
 // Veiligheidsverwerking voor automatisch hek
 // Verwerkt PBV (persoonsbeveiligingsbumper), VS (veilig sluiten), en sensordefect detectie
 // Prioriteit: FAULT > PBV > VS
+//
+// Versie 0.2: Geconverteerd van FC naar FB voor timer state behoud
+//             TON timers voor debounce van alle veiligheidssensoren
+//
+// NC Sensor logica:
+//   i_PBV_BeweegbaarHek: NC, 1 = trigger (bumper geraakt of draadbreuk)
+//   i_VS_Voertuig: 0 = geblokkeerd, 1 = intact
+//   i_BNS_Open/Dicht: NC, 0 = bereikt, 1 = niet bereikt
 
-FUNCTION "FC_Veiligheid" : Void
+FUNCTION_BLOCK "FB_Veiligheid"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 0.2
 
    VAR_INPUT
       i_PBV_BeweegbaarHek : Bool;   // Persoonsbeveiliging beweegbaar hek (NC: 0=OK, 1=trigger)
@@ -20,21 +28,43 @@ VERSION : 0.1
       q_Fault : Bool;                // Sensordefect gedetecteerd
    END_VAR
 
-   VAR_TEMP
-      t_BeidEindstanden : Bool;      // Hulpvariabele: beide eindstanden tegelijk actief
+   VAR
+      // Timer instances voor debouncing - state behouden tussen PLC cycles
+      m_TON_PBV : TON;               // Timer voor PBV debounce (50ms)
+      m_TON_VS : TON;                // Timer voor VS debounce (100ms)
+      m_TON_Fault : TON;             // Timer voor FAULT debounce (50ms)
+
+      // Hulpvariabelen voor tussenresultaten
+      m_RawFault : Bool;             // Beide eindstanden tegelijk actief
+      m_RawVS_Blocked : Bool;        // VS beam onderbroken
    END_VAR
 
 BEGIN
-    // Stub implementatie - volledige implementatie in Phase 2
-    // Debouncing en foutdetectie wordt hier uitgewerkt
+    // =========================================================================
+    // FAULT detectie: beide eindstanden tegelijk actief (NC: 0 = bereikt)
+    // Dit duidt op sensordefect of mechanisch probleem
+    // =========================================================================
+    #m_RawFault := (NOT #i_BNS_Open) AND (NOT #i_BNS_Dicht);
+    #m_TON_Fault(IN := #m_RawFault, PT := "DB_Config".Timers.CFG_EndstopDebounceMs);
 
-    #q_PBV_Trigger := FALSE;
-    #q_VS_Trigger := FALSE;
-    #q_Fault := FALSE;
+    // =========================================================================
+    // PBV debounce: NC sensor, 1 = trigger (bumper contact of draadbreuk)
+    // =========================================================================
+    #m_TON_PBV(IN := #i_PBV_BeweegbaarHek, PT := "DB_Config".Timers.CFG_EndstopDebounceMs);
 
-    // Placeholder voor sensordefect detectie:
-    // Beide eindstanden tegelijk actief = sensordefect
-    #t_BeidEindstanden := (NOT #i_BNS_Open) AND (NOT #i_BNS_Dicht);
-    // q_Fault wordt in Phase 2 met debounce uitgewerkt
+    // =========================================================================
+    // VS debounce: 0 = onderbroken (voertuig detectie)
+    // Langere debounce tijd (100ms) voor stabielere detectie
+    // =========================================================================
+    #m_RawVS_Blocked := NOT #i_VS_Voertuig;
+    #m_TON_VS(IN := #m_RawVS_Blocked, PT := "DB_Config".Safety.CFG_VS_DebounceMs);
 
-END_FUNCTION
+    // =========================================================================
+    // Debounced outputs - priority logic in Plan 02
+    // Timer Q is TRUE wanneer signaal stabiel was voor PT duur
+    // =========================================================================
+    #q_Fault := #m_TON_Fault.Q;
+    #q_PBV_Trigger := #m_TON_PBV.Q;
+    #q_VS_Trigger := #m_TON_VS.Q;
+
+END_FUNCTION_BLOCK
