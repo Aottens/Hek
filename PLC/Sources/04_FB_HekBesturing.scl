@@ -256,8 +256,32 @@ BEGIN
             END_IF;
 
         "DB_States".STATE_VS_PAUSE:
-            // Placeholder - Plan 03-03
-            ;
+            // Paused due to vehicle sensor (beam blocked)
+            // SAF-08: Auto-resumes in same direction when beam clears
+            // SAF-09: Ignores operator input during pause (auto-resume has priority)
+            // Motor outputs OFF (handled in output section - not in MOVING states)
+
+            // Safety checks FIRST (priority: FAULT > PBV > VS)
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            ELSIF #i_PBV_Trigger THEN
+                // PBV > VS: PBV can interrupt VS_PAUSE (statemachine.mmd line 49)
+                #m_Toestand := "DB_States".STATE_PBV_RETRACT;
+            ELSIF NOT #i_VS_Trigger THEN
+                // Beam cleared - auto-resume in saved direction
+                // NOTE: Phase 4 will add CFG_VS_HervattingMs delay before resume
+                // For Phase 3, resume immediately when beam clears
+                IF #m_VorigeRichtingVoorVS = "DB_States".DIR_OPEN THEN
+                    #m_Toestand := "DB_States".STATE_MOVING_OPEN;
+                ELSIF #m_VorigeRichtingVoorVS = "DB_States".DIR_DICHT THEN
+                    #m_Toestand := "DB_States".STATE_MOVING_DICHT;
+                ELSE
+                    // Safety fallback: no saved direction -> go to STOPPED
+                    #m_Toestand := "DB_States".STATE_STOPPED;
+                END_IF;
+            END_IF;
+            // NOTE: Push button and key switch edges are IGNORED in this state (SAF-09)
+            // Auto-resume has priority over operator input
 
         "DB_States".STATE_PBV_RETRACT:
             // Retracting toward OPEN after bumper activation
