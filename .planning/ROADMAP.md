@@ -10,7 +10,7 @@ This roadmap delivers TIA Portal v20 SCL code for an S7-1212C controlling an aut
 - Integer phases (1, 2, 3, 4): Planned milestone work
 - Decimal phases (e.g., 2.1): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation** - Block structure, DB_Config, SCL file templates
+- [x] **Phase 1: Foundation** - Block structure, DB_Config, SCL file templates
 - [ ] **Phase 2: Safety Core** - FC_Veiligheid, sensor processing, safety priority
 - [ ] **Phase 3: State Machine** - FB_HekBesturing, 9-state logic, control inputs
 - [ ] **Phase 4: Integration** - FC_Outputs, timer sequences, OB1 orchestration
@@ -29,8 +29,8 @@ This roadmap delivers TIA Portal v20 SCL code for an S7-1212C controlling an aut
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Create DB_States and DB_Config data blocks
-- [ ] 01-02-PLAN.md — Create FC_Veiligheid, FB_HekBesturing, FC_Outputs, Main_OB1
+- [x] 01-01-PLAN.md — Create DB_States and DB_Config data blocks
+- [x] 01-02-PLAN.md — Create FC_Veiligheid, FB_HekBesturing, FC_Outputs, Main_OB1
 
 ### Phase 2: Safety Core
 **Goal**: Implement isolated safety logic that can stop the gate on any trigger
@@ -81,7 +81,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Planned | - |
+| 1. Foundation | 2/2 | ✓ Complete | 2026-02-03 |
 | 2. Safety Core | 0/? | Not started | - |
 | 3. State Machine | 0/? | Not started | - |
 | 4. Integration | 0/? | Not started | - |
@@ -89,4 +89,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 ---
 *Roadmap created: 2026-02-02*
 *Phase 1 planned: 2026-02-03*
+*Phase 1 completed: 2026-02-03*
 *Coverage: 42/42 v1 requirements mapped*
