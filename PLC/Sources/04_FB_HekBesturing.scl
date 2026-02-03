@@ -154,8 +154,33 @@ BEGIN
             // No push button action from IDLE (no direction memory)
 
         "DB_States".STATE_MOVING_OPEN:
-            // Placeholder - Plan 03-02
-            ;
+            // Moving toward OPEN position
+            // Safety checks FIRST (priority: FAULT > PBV > VS)
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            ELSIF #i_PBV_Trigger THEN
+                // PBV during OPEN movement -> retract (continues toward OPEN)
+                #m_Toestand := "DB_States".STATE_PBV_RETRACT;
+            ELSIF #i_VS_Trigger THEN
+                // VS pause - save direction for auto-resume
+                #m_VorigeRichtingVoorVS := "DB_States".DIR_OPEN;
+                #m_Toestand := "DB_States".STATE_VS_PAUSE;
+            ELSIF #m_TON_Timeout.Q THEN
+                // SAF-11: Movement timeout -> STOPPED
+                #m_Toestand := "DB_States".STATE_STOPPED;
+                #m_KeyReleased := FALSE;  // CTL-08: require key release
+            ELSIF NOT #i_BNS_Open THEN
+                // NC: 0 = reached OPEN endstop
+                #m_Toestand := "DB_States".STATE_IDLE_OPEN;
+            ELSIF #m_EdgeDK.Q THEN
+                // Push button -> manual stop
+                #m_Toestand := "DB_States".STATE_STOPPED;
+            ELSIF #m_EdgeSS_Dicht.Q THEN
+                // CTL-07: Opposing key direction while moving -> stop
+                #m_Toestand := "DB_States".STATE_STOPPED;
+            END_IF;
+            // Direction memory maintained (already set when entering this state)
+            // Motor output: q_MS_Open=TRUE (handled in output section)
 
         "DB_States".STATE_MOVING_DICHT:
             // Placeholder - Plan 03-02
