@@ -49,6 +49,7 @@ VERSION : 0.1
 
       // Timers
       m_TON_Timeout : TON;           // Movement timeout (90s per CFG_BewegingTimeoutS)
+      m_TON_PBV_Retract : TON;       // PBV retract duration timer (3s per CFG_PBV_TerugtrekMs)
 
       // Control flags
       m_KeyReleased : Bool := TRUE;  // CTL-08: Key release tracking after timeout
@@ -70,6 +71,12 @@ BEGIN
                           (#m_Toestand = "DB_States".STATE_MOVING_OPEN) OR
                           (#m_Toestand = "DB_States".STATE_MOVING_DICHT),
                    PT := "DB_Config".Timers.CFG_BewegingTimeoutS);
+
+    // =========================================================================
+    // PBV retract timer - runs only in PBV_RETRACT state
+    // =========================================================================
+    #m_TON_PBV_Retract(IN := (#m_Toestand = "DB_States".STATE_PBV_RETRACT),
+                       PT := "DB_Config".Timers.CFG_PBV_TerugtrekMs);
 
     // =========================================================================
     // Power-on initialization - determine initial state from endstops
