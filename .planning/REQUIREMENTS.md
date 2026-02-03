@@ -121,16 +121,16 @@
 | CTL-06 | Phase 3 | Pending |
 | CTL-07 | Phase 3 | Pending |
 | CTL-08 | Phase 3 | Pending |
-| SAF-01 | Phase 2 | Pending |
-| SAF-02 | Phase 2 | Pending |
+| SAF-01 | Phase 2 | Complete |
+| SAF-02 | Phase 2 | Complete |
 | SAF-03 | Phase 3 | Pending |
 | SAF-04 | Phase 3 | Pending |
 | SAF-05 | Phase 3 | Pending |
-| SAF-06 | Phase 2 | Pending |
-| SAF-07 | Phase 2 | Pending |
+| SAF-06 | Phase 2 | Complete |
+| SAF-07 | Phase 2 | Complete |
 | SAF-08 | Phase 3 | Pending |
 | SAF-09 | Phase 3 | Pending |
-| SAF-10 | Phase 2 | Pending |
+| SAF-10 | Phase 2 | Complete |
 | SAF-11 | Phase 3 | Pending |
 | SAF-12 | Phase 3 | Pending |
 | TMR-01 | Phase 4 | Pending |
@@ -142,10 +142,10 @@
 | TMR-07 | Phase 4 | Pending |
 | TMR-08 | Phase 4 | Pending |
 | TMR-09 | Phase 4 | Pending |
-| SEN-01 | Phase 2 | Pending |
-| SEN-02 | Phase 2 | Pending |
-| SEN-03 | Phase 2 | Pending |
-| SEN-04 | Phase 2 | Pending |
+| SEN-01 | Phase 2 | Complete |
+| SEN-02 | Phase 2 | Complete |
+| SEN-03 | Phase 2 | Complete |
+| SEN-04 | Phase 2 | Complete |
 | OUT-01 | Phase 4 | Pending |
 | OUT-02 | Phase 4 | Pending |
 | OUT-03 | Phase 4 | Pending |
@@ -166,4 +166,4 @@
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-03 - SAF-03/04/05/08/09/11/12 moved from Phase 2 to Phase 3*
+*Last updated: 2026-02-03 - Phase 2 requirements marked Complete*

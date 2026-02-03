@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Gate stops immediately on any safety trigger and never traps a person or vehicle
-**Current focus:** Phase 2 - Safety Core
+**Current focus:** Phase 3 - State Machine
 
 ## Current Position
 
@@ -14,7 +14,7 @@ Plan: 2 of 2 in current phase
 Status: Phase complete
 Last activity: 2026-02-03 - Completed 02-02-PLAN.md (Priority Logic and SafetyStop)
 
-Progress: [####......] 40%
+Progress: [#####.....] 50%
 
 ## Performance Metrics
 
