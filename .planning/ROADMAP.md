@@ -12,7 +12,7 @@ This roadmap delivers TIA Portal v20 SCL code for an S7-1212C controlling an aut
 
 - [x] **Phase 1: Foundation** - Block structure, DB_Config, SCL file templates
 - [x] **Phase 2: Safety Core** - FB_Veiligheid, sensor debouncing, safety priority
-- [ ] **Phase 3: State Machine** - FB_HekBesturing, 9-state logic, control inputs
+- [x] **Phase 3: State Machine** - FB_HekBesturing, 9-state logic, control inputs
 - [ ] **Phase 4: Integration** - FC_Outputs, timer sequences, OB1 orchestration
 
 ## Phase Details
@@ -62,9 +62,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Core structure, initialization, HOMING, IDLE, FAULT states
-- [ ] 03-02-PLAN.md — Control inputs, MOVING states, STOPPED, direction memory
-- [ ] 03-03-PLAN.md — VS_PAUSE, PBV_RETRACT, timeout integration, output assignments
+- [x] 03-01-PLAN.md — Core structure, initialization, HOMING, IDLE, FAULT states
+- [x] 03-02-PLAN.md — Control inputs, MOVING states, STOPPED, direction memory
+- [x] 03-03-PLAN.md — VS_PAUSE, PBV_RETRACT, timeout integration, output assignments
 
 ### Phase 4: Integration
 **Goal**: Complete system with timer sequences, output mapping, and full OB1 orchestration
@@ -89,7 +89,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-03 |
 | 2. Safety Core | 2/2 | Complete | 2026-02-03 |
-| 3. State Machine | 0/3 | Planned | - |
+| 3. State Machine | 3/3 | Complete | 2026-02-03 |
 | 4. Integration | 0/? | Not started | - |
 
 ---
@@ -100,4 +100,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 *Phase 2 revised: 2026-02-03 (scope narrowed to trigger detection/priority)*
 *Phase 2 completed: 2026-02-03*
 *Phase 3 planned: 2026-02-03*
+*Phase 3 completed: 2026-02-03*
 *Coverage: 42/42 v1 requirements mapped*
