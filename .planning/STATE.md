@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 ## Current Position
 
-Phase: 2 of 4 (Safety Core)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-03 - Completed 02-02-PLAN.md (Priority Logic and SafetyStop)
+Phase: 3 of 4 (State Machine)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-03 - Completed 03-01-PLAN.md (Core State Machine Structure)
 
-Progress: [#####.....] 50%
+Progress: [######....] 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 2 min
-- Total execution time: 8 min
+- Total execution time: 10 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [#####.....] 50%
 |-------|-------|-------|----------|
 | 01-foundation | 2 | 4 min | 2 min |
 | 02-safety-core | 2 | 4 min | 2 min |
+| 03-state-machine | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-02 (2 min), 02-01 (3 min), 02-02 (1 min)
+- Last 5 plans: 01-02 (2 min), 02-01 (3 min), 02-02 (1 min), 03-01 (2 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -57,6 +58,9 @@ Recent decisions affecting current work:
 - [02-02]: Priority order FAULT > PBV > VS with AND NOT masking
 - [02-02]: Debug flags bypass priority for raw debounced values
 - [02-02]: SafetyStop is OR of priority-masked triggers
+- [03-01]: Direction memory cleared in FAULT state (safety decision)
+- [03-01]: HOMING aborts to STOPPED on any safety trigger (SM-04)
+- [03-01]: FAULT auto-recovers based on sensor state when condition clears
 
 ### Pending Todos
 
@@ -69,9 +73,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 02-02-PLAN.md (Priority Logic and SafetyStop) - Phase 2 complete
+Stopped at: Completed 03-01-PLAN.md (Core State Machine Structure)
 Resume file: None
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-03 (Phase 2 complete)*
+*Last updated: 2026-02-03 (Plan 03-01 complete)*
