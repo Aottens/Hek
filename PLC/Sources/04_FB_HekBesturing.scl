@@ -260,8 +260,25 @@ BEGIN
             ;
 
         "DB_States".STATE_PBV_RETRACT:
-            // Placeholder - Plan 03-03
-            ;
+            // Retracting toward OPEN after bumper activation
+            // SAF-03: Always moves toward OPEN regardless of previous direction
+            // SAF-05: Ignores ALL operator input during retract
+            // Motor output: q_MS_Open=TRUE (handled in output section)
+
+            // Only FAULT can interrupt PBV_RETRACT (FAULT > PBV priority)
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            ELSIF NOT #i_BNS_Open THEN
+                // NC: 0 = reached OPEN endstop -> safest position achieved
+                #m_Toestand := "DB_States".STATE_IDLE_OPEN;
+            ELSIF #m_TON_PBV_Retract.Q THEN
+                // SAF-04: Max retract duration reached, still in mid-position
+                #m_Toestand := "DB_States".STATE_STOPPED;
+                // Clear direction memory - operator must choose new direction
+                #m_LaatsteRichting := "DB_States".DIR_NONE;
+            END_IF;
+            // NOTE: Push button and key switch edges are IGNORED in this state (SAF-05)
+            // They are still detected (edge triggers run before CASE) but not acted upon
 
         "DB_States".STATE_FAULT:
             // Sensor fault detected - both endstops active simultaneously
