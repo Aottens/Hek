@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Phase: 3 of 4 (State Machine)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-03 - Completed 03-01-PLAN.md (Core State Machine Structure)
+Last activity: 2026-02-03 - Completed 03-02-PLAN.md (Movement and Control States)
 
-Progress: [######....] 62%
+Progress: [#######...] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 2 min
-- Total execution time: 10 min
+- Total execution time: 12 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [######....] 62%
 |-------|-------|-------|----------|
 | 01-foundation | 2 | 4 min | 2 min |
 | 02-safety-core | 2 | 4 min | 2 min |
-| 03-state-machine | 1 | 2 min | 2 min |
+| 03-state-machine | 2 | 4 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (2 min), 02-01 (3 min), 02-02 (1 min), 03-01 (2 min)
+- Last 5 plans: 02-01 (3 min), 02-02 (1 min), 03-01 (2 min), 03-02 (2 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -61,6 +61,10 @@ Recent decisions affecting current work:
 - [03-01]: Direction memory cleared in FAULT state (safety decision)
 - [03-01]: HOMING aborts to STOPPED on any safety trigger (SM-04)
 - [03-01]: FAULT auto-recovers based on sensor state when condition clears
+- [03-02]: Opposing key during movement stops immediately (CTL-07)
+- [03-02]: Push button with no direction memory ignored (safety)
+- [03-02]: Key release required after timeout (CTL-08)
+- [03-02]: Direction memory preserved through push button stop
 
 ### Pending Todos
 
@@ -73,9 +77,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 03-01-PLAN.md (Core State Machine Structure)
+Stopped at: Completed 03-02-PLAN.md (Movement and Control States)
 Resume file: None
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-03 (Plan 03-01 complete)*
+*Last updated: 2026-02-03 (Plan 03-02 complete)*
