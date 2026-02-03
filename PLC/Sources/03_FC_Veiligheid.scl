@@ -49,30 +49,44 @@ VERSION : 0.2
 
 BEGIN
     // =========================================================================
-    // FAULT detectie: beide eindstanden tegelijk actief (NC: 0 = bereikt)
-    // Dit duidt op sensordefect of mechanisch probleem
+    // STAP 1: DEBOUNCE (uitgevoerd door TON timers)
     // =========================================================================
+    // FAULT: beide eindstanden tegelijk actief (NC: 0 = bereikt)
     #m_RawFault := (NOT #i_BNS_Open) AND (NOT #i_BNS_Dicht);
     #m_TON_Fault(IN := #m_RawFault, PT := "DB_Config".Timers.CFG_EndstopDebounceMs);
 
-    // =========================================================================
-    // PBV debounce: NC sensor, 1 = trigger (bumper contact of draadbreuk)
-    // =========================================================================
+    // PBV: NC sensor, 1 = trigger (bumper contact of draadbreuk)
     #m_TON_PBV(IN := #i_PBV_BeweegbaarHek, PT := "DB_Config".Timers.CFG_EndstopDebounceMs);
 
-    // =========================================================================
-    // VS debounce: 0 = onderbroken (voertuig detectie)
-    // Langere debounce tijd (100ms) voor stabielere detectie
-    // =========================================================================
+    // VS: 0 = onderbroken (voertuig in lichtsluis)
     #m_RawVS_Blocked := NOT #i_VS_Voertuig;
     #m_TON_VS(IN := #m_RawVS_Blocked, PT := "DB_Config".Safety.CFG_VS_DebounceMs);
 
     // =========================================================================
-    // Debounced outputs - priority logic in Plan 02
-    // Timer Q is TRUE wanneer signaal stabiel was voor PT duur
+    // STAP 2: DEBUG FLAGS (raw debounced, geen prioriteit)
     // =========================================================================
+    #q_Debug_Fault_Active := #m_TON_Fault.Q;
+    #q_Debug_PBV_Active := #m_TON_PBV.Q;
+    #q_Debug_VS_Active := #m_TON_VS.Q;
+
+    // =========================================================================
+    // STAP 3: PRIORITEITSLOGICA (SAF-01: FAULT > PBV > VS)
+    // =========================================================================
+    // Evalueer in prioriteitsvolgorde met masking
+
+    // FAULT: hoogste prioriteit, maskeert alles
     #q_Fault := #m_TON_Fault.Q;
-    #q_PBV_Trigger := #m_TON_PBV.Q;
-    #q_VS_Trigger := #m_TON_VS.Q;
+
+    // PBV: tweede prioriteit, alleen actief als geen FAULT
+    #q_PBV_Trigger := #m_TON_PBV.Q AND NOT #q_Fault;
+
+    // VS: laagste prioriteit, alleen actief als geen FAULT en geen PBV
+    #q_VS_Trigger := #m_TON_VS.Q AND NOT #q_Fault AND NOT #q_PBV_Trigger;
+
+    // =========================================================================
+    // STAP 4: GECOMBINEERDE SAFETY STOP
+    // =========================================================================
+    // TRUE als ENIGE veiligheidsconditie actief is (na debounce)
+    #q_SafetyStop := #q_Fault OR #q_PBV_Trigger OR #q_VS_Trigger;
 
 END_FUNCTION_BLOCK
