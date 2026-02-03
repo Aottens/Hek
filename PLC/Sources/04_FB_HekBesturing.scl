@@ -102,16 +102,56 @@ BEGIN
     // =========================================================================
     CASE #m_Toestand OF
         "DB_States".STATE_HOMING:
-            // Implemented in this plan (Task 3)
-            ;
+            // HOMING: Moving toward DICHT to find reference position
+            // Safety checks FIRST (priority: FAULT > PBV > VS per CONTEXT.md)
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            ELSIF #i_PBV_Trigger OR #i_VS_Trigger THEN
+                // SM-04: HOMING aborts to STOPPED on PBV or VS trigger
+                #m_Toestand := "DB_States".STATE_STOPPED;
+            ELSIF #m_TON_Timeout.Q THEN
+                // SAF-12: HOMING uses same timeout as normal movement
+                #m_Toestand := "DB_States".STATE_STOPPED;
+                #m_KeyReleased := FALSE;
+            ELSIF NOT #i_BNS_Dicht THEN
+                // NC: 0 = reached DICHT endstop
+                #m_Toestand := "DB_States".STATE_IDLE_DICHT;
+            ELSIF #m_EdgeDK.Q THEN
+                // Push button during HOMING -> abort to STOPPED (manual stop works in all movement states)
+                #m_Toestand := "DB_States".STATE_STOPPED;
+            END_IF;
+            // Motor output: moving toward DICHT (handled in output section)
 
         "DB_States".STATE_IDLE_OPEN:
-            // Implemented in this plan (Task 3)
-            ;
+            // Gate fully OPEN, motor off
+            // Clear direction memory when at endstop (no accidental resume toward wall)
+            #m_LaatsteRichting := "DB_States".DIR_NONE;
+
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            ELSIF #i_PBV_Trigger THEN
+                // PBV at IDLE_OPEN: stay here (already at safest position per CONTEXT.md)
+                ; // No action - already at OPEN endstop
+            // Key DICHT starts movement toward DICHT
+            ELSIF #m_EdgeSS_Dicht.Q THEN
+                #m_Toestand := "DB_States".STATE_MOVING_DICHT;
+                #m_LaatsteRichting := "DB_States".DIR_DICHT;
+            END_IF;
+            // No push button action from IDLE (no direction memory)
 
         "DB_States".STATE_IDLE_DICHT:
-            // Implemented in this plan (Task 3)
-            ;
+            // Gate fully CLOSED, motor off, alarm deactivated
+            // Clear direction memory when at endstop
+            #m_LaatsteRichting := "DB_States".DIR_NONE;
+
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            // Key OPEN starts movement toward OPEN
+            ELSIF #m_EdgeSS_Open.Q THEN
+                #m_Toestand := "DB_States".STATE_MOVING_OPEN;
+                #m_LaatsteRichting := "DB_States".DIR_OPEN;
+            END_IF;
+            // No push button action from IDLE (no direction memory)
 
         "DB_States".STATE_MOVING_OPEN:
             // Placeholder - Plan 03-02
@@ -134,8 +174,23 @@ BEGIN
             ;
 
         "DB_States".STATE_FAULT:
-            // Implemented in this plan (Task 3)
-            ;
+            // Sensor fault detected - both endstops active simultaneously
+            // Motor outputs forced off (handled in output section)
+            // Clear direction memory on FAULT (safety per CONTEXT.md - Claude decides)
+            #m_LaatsteRichting := "DB_States".DIR_NONE;
+
+            // Auto-recovery when fault condition clears (SM-08)
+            IF NOT #i_Fault THEN
+                // Check current sensor state to determine recovery state
+                IF NOT #i_BNS_Dicht THEN
+                    #m_Toestand := "DB_States".STATE_IDLE_DICHT;
+                ELSIF NOT #i_BNS_Open THEN
+                    #m_Toestand := "DB_States".STATE_IDLE_OPEN;
+                ELSE
+                    // Neither endstop - go to STOPPED (safe default per CONTEXT.md)
+                    #m_Toestand := "DB_States".STATE_STOPPED;
+                END_IF;
+            END_IF;
 
         ELSE
             // Unexpected state - recover to safe state
