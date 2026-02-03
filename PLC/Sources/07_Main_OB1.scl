@@ -1,6 +1,6 @@
 // Main_OB1.scl
 // Hoofdprogramma - cyclische uitvoering
-// Aanroepvolgorde per CODE-01: FC_Veiligheid -> FB_HekBesturing -> FC_Outputs
+// Aanroepvolgorde per CODE-01: FB_Veiligheid -> FB_HekBesturing -> FC_Outputs
 //
 // Dit is het centrale organisatieblok (OB1) dat elke PLC-cyclus wordt uitgevoerd.
 // De blokken worden in vaste volgorde aangeroepen om correcte dataflow te garanderen:
@@ -11,7 +11,7 @@
 ORGANIZATION_BLOCK "Main"
 TITLE = Hoofdprogramma cyclus
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 0.2
 
    VAR_TEMP
       t_OB1_Info : Array[0..19] of Byte;   // OB1 systeeminformatie
@@ -33,10 +33,11 @@ BEGIN
     // =========================================================================
     // STAP 1: VEILIGHEIDSVERWERKING (prioriteit: FAULT > PBV > VS)
     // =========================================================================
-    // FC_Veiligheid verwerkt alle veiligheidssensoren en bepaalt triggers.
+    // FB_Veiligheid verwerkt alle veiligheidssensoren met debouncing.
+    // Timers behouden state via instantie in DB_HekData.m_Veiligheid.
     // Moet als eerste worden uitgevoerd zodat state machine actuele veiligheidsinfo heeft.
 
-    "FC_Veiligheid"(
+    "FB_Veiligheid"."DB_HekData".m_Veiligheid(
         i_PBV_BeweegbaarHek := %I1.2,    // Persoonsbeveiliging beweegbaar hek
         i_VS_Voertuig := %I1.3,          // Voertuigdetectie lichtsluis
         i_BNS_Open := %I0.7,             // Benaderingsschakelaar OPEN
@@ -50,10 +51,10 @@ BEGIN
     // STAP 2: TOESTANDSMACHINE (hekbesturing logica)
     // =========================================================================
     // FB_HekBesturing bevat de 9-state machine per FDS sectie 2.2.
-    // Ontvangt veiligheidstriggers van FC_Veiligheid en operator inputs.
+    // Ontvangt veiligheidstriggers van FB_Veiligheid en operator inputs.
     // Produceert motorcommando's en alarmstatus.
 
-    "FB_HekBesturing"."DB_HekData"(
+    "FB_HekBesturing"."DB_HekData".m_HekBesturing(
         i_SS_Open := %I0.1,              // Sleutelschakelaar OPEN
         i_SS_Dicht := %I0.3,             // Sleutelschakelaar DICHT
         i_DK_Bediening := %I0.2,         // Drukknop bediening (NC: 0=ingedrukt)

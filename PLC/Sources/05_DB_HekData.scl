@@ -1,14 +1,21 @@
 // DB_HekData.scl
-// Instance datablock voor FB_HekBesturing
-// Bevat alle statische variabelen van de state machine instantie
+// Gecombineerd datablok voor FB instanties
+// Bevat instanties voor FB_Veiligheid en FB_HekBesturing
 //
-// Dit is een instance DB: de structuur wordt automatisch afgeleid
-// van FB_HekBesturing. Wijzig de FB voor structuurwijzigingen.
+// Dit datablok bevat de instantiedata voor alle functieblokken.
+// De FB instanties behouden hun state (timers, tussenresultaten) tussen cycles.
+//
+// Gebruik:
+//   "FB_Veiligheid"."DB_HekData".m_Veiligheid(...)
+//   "FB_HekBesturing"."DB_HekData".m_HekBesturing(...)
 
 DATA_BLOCK "DB_HekData"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 0.2
 NON_RETAIN
-"FB_HekBesturing"
+   STRUCT
+      m_Veiligheid : "FB_Veiligheid";      // Instantie veiligheidsverwerking
+      m_HekBesturing : "FB_HekBesturing";  // Instantie state machine
+   END_STRUCT;
 BEGIN
 END_DATA_BLOCK
