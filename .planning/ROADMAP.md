@@ -11,7 +11,7 @@ This roadmap delivers TIA Portal v20 SCL code for an S7-1212C controlling an aut
 - Decimal phases (e.g., 2.1): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Foundation** - Block structure, DB_Config, SCL file templates
-- [ ] **Phase 2: Safety Core** - FC_Veiligheid, sensor processing, safety priority
+- [ ] **Phase 2: Safety Core** - FB_Veiligheid, sensor debouncing, safety priority
 - [ ] **Phase 3: State Machine** - FB_HekBesturing, 9-state logic, control inputs
 - [ ] **Phase 4: Integration** - FC_Outputs, timer sequences, OB1 orchestration
 
@@ -41,10 +41,11 @@ Plans:
   2. VS trigger (beam interruption) produces pause signal that auto-resumes after delay
   3. All NC sensors produce trigger when wire is disconnected (fail-safe verified)
   4. Safety priority order enforced: FAULT > PBV > VS
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Convert FC_Veiligheid to FB_Veiligheid with TON debouncing
+- [ ] 02-02-PLAN.md — Implement priority logic (FAULT > PBV > VS) and SafetyStop output
 
 ### Phase 3: State Machine
 **Goal**: Implement 9-state machine with all transitions and control inputs
@@ -81,8 +82,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/2 | ✓ Complete | 2026-02-03 |
-| 2. Safety Core | 0/? | Not started | - |
+| 1. Foundation | 2/2 | Complete | 2026-02-03 |
+| 2. Safety Core | 0/2 | Planned | - |
 | 3. State Machine | 0/? | Not started | - |
 | 4. Integration | 0/? | Not started | - |
 
@@ -90,4 +91,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 *Roadmap created: 2026-02-02*
 *Phase 1 planned: 2026-02-03*
 *Phase 1 completed: 2026-02-03*
+*Phase 2 planned: 2026-02-03*
 *Coverage: 42/42 v1 requirements mapped*
