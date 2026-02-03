@@ -23,9 +23,17 @@ VERSION : 0.2
    END_VAR
 
    VAR_OUTPUT
-      q_PBV_Trigger : Bool;          // PBV geactiveerd (gedebounced)
-      q_VS_Trigger : Bool;           // VS geactiveerd (gedebounced)
-      q_Fault : Bool;                // Sensordefect gedetecteerd
+      q_PBV_Trigger : Bool;          // PBV geactiveerd (gedebounced, prioriteit toegepast)
+      q_VS_Trigger : Bool;           // VS geactiveerd (gedebounced, prioriteit toegepast)
+      q_Fault : Bool;                // Sensordefect gedetecteerd (hoogste prioriteit)
+
+      // Combined safety output for state machine
+      q_SafetyStop : Bool;           // TRUE = any safety condition active, motor must stop
+
+      // Debug flags (individual active states, before priority masking)
+      q_Debug_PBV_Active : Bool;     // Raw debounced PBV state (before priority)
+      q_Debug_VS_Active : Bool;      // Raw debounced VS state (before priority)
+      q_Debug_Fault_Active : Bool;   // Raw debounced FAULT state
    END_VAR
 
    VAR
