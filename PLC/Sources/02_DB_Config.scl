@@ -1,0 +1,77 @@
+// ============================================================================
+// DB_Config.scl
+// Configuratieparameters voor hekbesturing
+//
+// Beschrijving:
+//   Dit datablok bevat alle configureerbare parameters voor de automatische
+//   hekbesturing. De parameters zijn gegroepeerd in categorien en alle
+//   timerwaarden gebruiken het TIME type met T# notatie.
+//
+// Parameters per FDS sectie 8:
+//   - CFG_LaagToerenMs      : Duur lage snelheid bij start
+//   - CFG_PBV_PauzeMs       : Pauze voor terugtrekken na PBV
+//   - CFG_PBV_TerugtrekMs   : Max duur terugtrekbeweging
+//   - CFG_VS_HervattingMs   : Wachttijd na beam herstel
+//   - CFG_VS_LaagToerenMs   : Lage snelheid na VS hervatting
+//   - CFG_BewegingTimeoutS  : Bewegingstimeout
+//   - CFG_EndstopDebounceMs : Debounce eindstand/PBV
+//   - CFG_VS_DebounceMs     : VS debounce tijd
+//
+// Gebruik:
+//   Refereer naar parameters als: "DB_Config".Timers.CFG_LaagToerenMs
+//
+// Versie: 0.1
+// Datum: 2026-02-03
+// ============================================================================
+
+DATA_BLOCK "DB_Config"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   STRUCT
+      // =====================================================================
+      // Timers - alle tijdsparameters voor beweging en veiligheid
+      // =====================================================================
+      Timers : STRUCT
+         CFG_LaagToerenMs : Time := T#5S;        // Duur lage snelheid bij start beweging
+         CFG_PBV_PauzeMs : Time := T#500MS;      // Pauze voor terugtrekken na PBV trigger
+         CFG_PBV_TerugtrekMs : Time := T#3S;     // Max duur terugtrekbeweging na PBV
+         CFG_VS_HervattingMs : Time := T#2S;     // Wachttijd na beam herstel voor hervatting
+         CFG_VS_LaagToerenMs : Time := T#2S;     // Lage snelheid duur na VS hervatting
+         CFG_BewegingTimeoutS : Time := T#90S;   // Bewegingstimeout (max bewegingsduur)
+         CFG_EndstopDebounceMs : Time := T#50MS; // Debounce tijd eindstand en PBV sensoren
+      END_STRUCT;
+
+      // =====================================================================
+      // Safety - veiligheidsparameters
+      // =====================================================================
+      Safety : STRUCT
+         CFG_VS_DebounceMs : Time := T#100MS;    // VS (lichtsluis) debounce tijd
+      END_STRUCT;
+
+      // =====================================================================
+      // Motor - toekomstige motorparameters
+      // =====================================================================
+      Motor : STRUCT
+         // Toekomstige motorparameters
+         // Placeholder voor snelheidswaarden en rampinstellingen
+      END_STRUCT;
+
+      // =====================================================================
+      // Limits - toekomstige limietwaarden
+      // =====================================================================
+      Limits : STRUCT
+         // Toekomstige limietwaarden
+         // Placeholder voor positiebegrenzingen en toleranties
+      END_STRUCT;
+
+      // =====================================================================
+      // Debug - ontwikkel- en testparameters
+      // =====================================================================
+      Debug : STRUCT
+         SimulatieActief : Bool := FALSE;        // Debug simulatiemodus (TRUE = sensoren gesimuleerd)
+      END_STRUCT;
+
+   END_STRUCT;
+BEGIN
+END_DATA_BLOCK
