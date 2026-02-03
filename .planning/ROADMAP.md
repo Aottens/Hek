@@ -33,12 +33,12 @@ Plans:
 - [x] 01-02-PLAN.md — Create FC_Veiligheid, FB_HekBesturing, FC_Outputs, Main_OB1
 
 ### Phase 2: Safety Core
-**Goal**: Implement isolated safety logic that can stop the gate on any trigger
+**Goal**: Implement safety trigger detection, debouncing, and priority logic
 **Depends on**: Phase 1
-**Requirements**: SAF-01, SAF-02, SAF-03, SAF-04, SAF-05, SAF-06, SAF-07, SAF-08, SAF-09, SAF-10, SAF-11, SAF-12, SEN-01, SEN-02, SEN-03, SEN-04
+**Requirements**: SAF-01, SAF-02, SAF-06, SAF-07, SAF-10, SEN-01, SEN-02, SEN-03, SEN-04
 **Success Criteria** (what must be TRUE):
   1. PBV trigger (bumper contact) produces immediate stop signal with correct priority
-  2. VS trigger (beam interruption) produces pause signal that auto-resumes after delay
+  2. VS trigger (beam interruption) produces immediate pause signal with correct priority
   3. All NC sensors produce trigger when wire is disconnected (fail-safe verified)
   4. Safety priority order enforced: FAULT > PBV > VS
 **Plans**: 2 plans
@@ -48,14 +48,17 @@ Plans:
 - [ ] 02-02-PLAN.md — Implement priority logic (FAULT > PBV > VS) and SafetyStop output
 
 ### Phase 3: State Machine
-**Goal**: Implement 9-state machine with all transitions and control inputs
+**Goal**: Implement 9-state machine with all transitions, control inputs, and safety behaviors
 **Depends on**: Phase 2
-**Requirements**: SM-01, SM-02, SM-03, SM-04, SM-05, SM-06, SM-07, SM-08, SM-09, CTL-01, CTL-02, CTL-03, CTL-04, CTL-05, CTL-06, CTL-07, CTL-08
+**Requirements**: SM-01, SM-02, SM-03, SM-04, SM-05, SM-06, SM-07, SM-08, SM-09, CTL-01, CTL-02, CTL-03, CTL-04, CTL-05, CTL-06, CTL-07, CTL-08, SAF-03, SAF-04, SAF-05, SAF-08, SAF-09, SAF-11, SAF-12
 **Success Criteria** (what must be TRUE):
   1. Key switch OPEN/DICHT commands transition to correct movement states
   2. Push button toggles between STOPPED and movement states
   3. HOMING state activates on power-up with unknown position and moves toward DICHT
   4. FAULT state activates when both endstops active, auto-recovers when cleared
+  5. PBV trigger retracts gate toward OPEN at low speed, ignoring operator input
+  6. VS trigger pauses movement and auto-resumes after beam clear + delay
+  7. Movement timeout (90s) transitions to STOPPED state
 **Plans**: TBD
 
 Plans:
@@ -92,4 +95,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 *Phase 1 planned: 2026-02-03*
 *Phase 1 completed: 2026-02-03*
 *Phase 2 planned: 2026-02-03*
+*Phase 2 revised: 2026-02-03 (scope narrowed to trigger detection/priority)*
 *Coverage: 42/42 v1 requirements mapped*
