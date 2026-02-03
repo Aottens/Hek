@@ -40,6 +40,19 @@ VERSION : 0.1
       m_Toestand : Int;              // Huidige toestand van de state machine
       m_VorigeToestand : Int;        // Vorige toestand (voor transitie detectie)
       m_LaatsteRichting : Int;       // Laatst actieve richting (DIR_OPEN=1, DIR_DICHT=2)
+      m_VorigeRichtingVoorVS : Int;  // Direction before VS pause (for auto-resume)
+
+      // Edge detection - IEC standard function blocks
+      m_EdgeSS_Open : R_TRIG;        // Rising edge key switch OPEN
+      m_EdgeSS_Dicht : R_TRIG;       // Rising edge key switch DICHT
+      m_EdgeDK : F_TRIG;             // Falling edge push button (NC: 0=pressed)
+
+      // Timers
+      m_TON_Timeout : TON;           // Movement timeout (90s per CFG_BewegingTimeoutS)
+
+      // Control flags
+      m_KeyReleased : Bool := TRUE;  // CTL-08: Key release tracking after timeout
+      m_FirstScan : Bool := TRUE;    // Power-on detection for initialization
    END_VAR
 
 BEGIN
