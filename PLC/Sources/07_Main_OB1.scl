@@ -21,6 +21,12 @@ VERSION : 0.2
       t_VS_Trigger : Bool;
       t_Fault : Bool;
 
+      // Additional safety outputs
+      t_SafetyStop : Bool;
+      t_Debug_PBV_Active : Bool;
+      t_Debug_VS_Active : Bool;
+      t_Debug_Fault_Active : Bool;
+
       // Tussenresultaten state machine
       t_MS_Open : Bool;
       t_MS_Dicht : Bool;
@@ -44,7 +50,11 @@ BEGIN
         i_BNS_Dicht := %I1.0,            // Benaderingsschakelaar DICHT
         q_PBV_Trigger => #t_PBV_Trigger,
         q_VS_Trigger => #t_VS_Trigger,
-        q_Fault => #t_Fault
+        q_Fault => #t_Fault,
+        q_SafetyStop => #t_SafetyStop,
+        q_Debug_PBV_Active => #t_Debug_PBV_Active,
+        q_Debug_VS_Active => #t_Debug_VS_Active,
+        q_Debug_Fault_Active => #t_Debug_Fault_Active
     );
 
     // =========================================================================
