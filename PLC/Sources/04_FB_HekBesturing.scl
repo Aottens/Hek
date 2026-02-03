@@ -212,8 +212,41 @@ BEGIN
             // Motor output: q_MS_Dicht=TRUE (handled in output section)
 
         "DB_States".STATE_STOPPED:
-            // Placeholder - Plan 03-02
-            ;
+            // Stopped in intermediate position (not at endstop)
+            // Motor outputs off (handled in output section)
+
+            IF #i_Fault THEN
+                #m_Toestand := "DB_States".STATE_FAULT;
+            ELSE
+                // CTL-08: Track key release after timeout
+                // Keys must be released before new input is accepted
+                IF NOT #m_KeyReleased THEN
+                    // Waiting for key release after timeout
+                    IF NOT #i_SS_Open AND NOT #i_SS_Dicht THEN
+                        #m_KeyReleased := TRUE;
+                    END_IF;
+                    // Ignore all input while waiting for release
+                ELSE
+                    // Normal input processing
+                    // CTL-06: Key switch from STOPPED starts in selected direction (overrides last direction)
+                    IF #m_EdgeSS_Open.Q THEN
+                        #m_Toestand := "DB_States".STATE_MOVING_OPEN;
+                        #m_LaatsteRichting := "DB_States".DIR_OPEN;
+                    ELSIF #m_EdgeSS_Dicht.Q THEN
+                        #m_Toestand := "DB_States".STATE_MOVING_DICHT;
+                        #m_LaatsteRichting := "DB_States".DIR_DICHT;
+                    // CTL-04, CTL-05: Push button toggles stop/resume, resumes last direction
+                    ELSIF #m_EdgeDK.Q THEN
+                        IF #m_LaatsteRichting = "DB_States".DIR_OPEN THEN
+                            #m_Toestand := "DB_States".STATE_MOVING_OPEN;
+                        ELSIF #m_LaatsteRichting = "DB_States".DIR_DICHT THEN
+                            #m_Toestand := "DB_States".STATE_MOVING_DICHT;
+                        END_IF;
+                        // If m_LaatsteRichting = DIR_NONE (fresh power-up, never moved)
+                        // -> ignore push button (safest default per CONTEXT.md - no movement without explicit direction)
+                    END_IF;
+                END_IF;
+            END_IF;
 
         "DB_States".STATE_VS_PAUSE:
             // Placeholder - Plan 03-03
