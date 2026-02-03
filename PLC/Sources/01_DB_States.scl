@@ -1,0 +1,46 @@
+// ============================================================================
+// DB_States.scl
+// Globale toestandsconstanten voor hekbesturing
+//
+// Beschrijving:
+//   Dit datablok bevat alle toestandsconstanten voor de automatische
+//   hekbesturing. De waarden corresponderen met de toestanden beschreven
+//   in FDS sectie 2.2 en de statemachine.mmd.
+//
+// Gebruik:
+//   Refereer naar constanten als: "DB_States".STATE_IDLE_OPEN
+//
+// Versie: 0.1
+// Datum: 2026-02-03
+// ============================================================================
+
+DATA_BLOCK "DB_States"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   STRUCT
+      // =====================================================================
+      // Toestandsconstanten - volgorde per FDS sectie 2.2
+      // =====================================================================
+
+      STATE_HOMING : Int := 0;        // Zoeken referentiepositie bij opstart
+      STATE_IDLE_OPEN : Int := 1;     // Hek volledig open, motor uit
+      STATE_IDLE_DICHT : Int := 2;    // Hek volledig dicht, alarm aan
+      STATE_MOVING_OPEN : Int := 3;   // Beweging richting open
+      STATE_MOVING_DICHT : Int := 4;  // Beweging richting dicht
+      STATE_STOPPED : Int := 5;       // Gestopt in tussenpositie
+      STATE_VS_PAUSE : Int := 6;      // Gepauzeerd door lichtsluis
+      STATE_PBV_RETRACT : Int := 7;   // Terugtrekken na bumperactivatie
+      STATE_FAULT : Int := 8;         // Sensorstoring gedetecteerd
+
+      // =====================================================================
+      // Richtingsconstanten
+      // =====================================================================
+
+      DIR_NONE : Int := 0;            // Geen richting
+      DIR_OPEN : Int := 1;            // Richting OPEN
+      DIR_DICHT : Int := 2;           // Richting DICHT
+
+   END_STRUCT;
+BEGIN
+END_DATA_BLOCK
