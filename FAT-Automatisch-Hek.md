@@ -411,4 +411,103 @@ ________________________________________________________________
 
 ---
 
+## 8. Safety Tests
+
+**Referentie:** FC_Veiligheid, FB_HekBesturing safety logic
+
+**Doel:** Verifieer alle veiligheidskritische gedragingen van het systeem.
+
+### 8.1 PBV (Pinch Body Vehicle) Safety Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-01a | PBV detectie | Start beweging MOVING_DICHT | Motor draait richting DICHT | [ ] | Voorwaarde |
+| SAF-01b | PBV pauze | Trigger PBV (druk rubber bumper in) | Motor stopt direct | [ ] | Onmiddellijke stop |
+| SAF-01c | PBV pauze duur | Meet wachttijd met stopwatch | 500ms pauze (CFG_PBV_PauzeMs) | [ ] | 500ms |
+| SAF-01d | PBV terugtrekken | Observeer na pauze | Motor start richting OPEN, lage snelheid | [ ] | Retract |
+| SAF-01e | PBV stop conditie | Observeer tot eindstand of timer | Stopt bij BNS_Open OF na 3s (CFG_PBV_TerugtrekMs) | [ ] | Stopcondities |
+| SAF-02a | PBV richting (DICHT) | Start MOVING_DICHT, trigger PBV | Motor keert om naar OPEN | [ ] | Richting wisselt |
+| SAF-02b | PBV richting (OPEN) | Start MOVING_OPEN, trigger PBV | Motor blijft OPEN (zelfde richting) | [ ] | Richting blijft |
+| SAF-02c | PBV altijd OPEN | Analyseer logica | PBV trekt ALTIJD terug naar OPEN | Openen is altijd veiligst | [ ] | |
+
+### 8.2 VS (Vehicle Sensor) Safety Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-03a | VS detectie | Start beweging, blokkeer lichtsluis | Motor stopt (VS_PAUSE state) | [ ] | Pauze |
+| SAF-03b | VS herstel | Maak lichtsluis vrij | Wacht op hervatting | [ ] | Beam OK |
+| SAF-03c | VS wachttijd | Meet wachttijd na beam herstel | 2s vertraging (CFG_VS_HervattingMs) | [ ] | 2s delay |
+| SAF-03d | VS hervatting | Observeer na wachttijd | Motor hervat ZELFDE richting, lage snelheid | [ ] | Auto-resume |
+| SAF-03e | VS lage snelheid | Meet duur lage snelheid | 2s (CFG_VS_LaagToerenMs), dan normale snelheid | [ ] | 2s laag |
+
+### 8.3 FAULT Safety Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-04a | FAULT detectie | Simuleer beide i_BNS_Open=0 EN i_BNS_Dicht=0 tegelijk | Hek gaat direct naar FAULT state | [ ] | Sensor fout |
+| SAF-04b | FAULT motor uit | In FAULT state | Alle motor outputs = 0 | [ ] | Veilig |
+| SAF-04c | FAULT bediening | In FAULT state, probeer sleutel/drukknop | Alle bediening genegeerd | [ ] | Geblokkeerd |
+| SAF-05a | FAULT herstel DICHT | Vanuit FAULT, herstel naar alleen BNS_Dicht actief (=0) | Transitie naar IDLE_DICHT | [ ] | Auto recovery |
+| SAF-05b | FAULT herstel OPEN | Vanuit FAULT, herstel naar alleen BNS_Open actief (=0) | Transitie naar IDLE_OPEN | [ ] | Auto recovery |
+| SAF-05c | FAULT herstel midden | Vanuit FAULT, herstel naar geen eindstand actief | Transitie naar STOPPED | [ ] | Auto recovery |
+
+### 8.4 Prioriteit Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-06a | FAULT > PBV | Tijdens PBV_RETRACT, simuleer FAULT (beide eindstanden) | Direct naar FAULT, retract afgebroken | [ ] | FAULT wint |
+| SAF-06b | PBV > VS | Tijdens VS_PAUSE, trigger PBV | Transitie naar PBV_RETRACT | [ ] | PBV wint |
+| SAF-06c | FAULT > VS | Tijdens VS_PAUSE, simuleer FAULT | Direct naar FAULT | [ ] | FAULT wint |
+| SAF-06d | Prioriteit bevestigd | Analyseer logica | Volgorde: FAULT > PBV > VS | [ ] | Altijd |
+
+### 8.5 Debounce Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-07a | BNS debounce kort | Kort schakelen BNS_Open (< 50ms) | Geen state wijziging (gedebounced) | [ ] | 50ms filter |
+| SAF-07b | BNS debounce lang | Houd BNS_Open > 50ms actief | State wijziging vindt plaats | [ ] | Valide signaal |
+| SAF-07c | VS debounce kort | Kort blokkeer lichtsluis (< 100ms) | Geen VS_PAUSE (gedebounced) | [ ] | 100ms filter |
+| SAF-07d | VS debounce lang | Houd lichtsluis > 100ms geblokkeerd | VS_PAUSE activeert | [ ] | Valide signaal |
+| SAF-07e | Debounce waarden | Verifieer configuratie | 50ms (eindstand, PBV), 100ms (VS) | [ ] | Parameters |
+
+### 8.6 Motor Mutual Exclusion Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-08a | Exclusie OPEN | Tijdens MOVING_OPEN, monitor outputs | q_MS_Dicht = 0 (altijd) | [ ] | Nooit beide |
+| SAF-08b | Exclusie DICHT | Tijdens MOVING_DICHT, monitor outputs | q_MS_Open = 0 (altijd) | [ ] | Nooit beide |
+| SAF-08c | Exclusie alle states | Controleer in ALLE bewegende states | Nooit beide motor outputs tegelijk actief | [ ] | Kritisch |
+| SAF-08d | Exclusie verify | Analyseer PLC code | Motor mutual exclusion in FC_Outputs | [ ] | Code check |
+
+### 8.7 Alarm Fail-Safe Tests
+
+| Test ID | Veiligheid | Test Procedure | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|----------------|-------------------|-----------|-------------|
+| SAF-09a | Alarm bij DICHT | Hek in IDLE_DICHT state | q_AlarmKerk = 0 (alarm AAN) | [ ] | Fail-safe actief |
+| SAF-09b | Alarm bij OPEN | Hek in andere state dan IDLE_DICHT | q_AlarmKerk = 1 (alarm UIT) | [ ] | Normaal |
+| SAF-09c | Alarm draadbreuk | Ontkoppel q_AlarmKerk draad | Alarm activeert (fail-safe) | [ ] | Open circuit |
+| SAF-09d | Alarm power loss | Schakel PLC uit | Alarm activeert (fail-safe) | [ ] | Stroom uit |
+
+### 8.8 Wire-Break Tests (NC Sensors)
+
+**Doel:** Verifieer dat draadbreuk bij NC sensoren resulteert in een veilige toestand.
+
+| Sensor | Test Procedure | Verwacht | Veilig Gedrag | Pass/Fail | Opmerkingen |
+|--------|----------------|----------|---------------|-----------|-------------|
+| i_DK_Bediening | Ontkoppel sensor draad | PLC leest 1 (NC open circuit) | Drukknop lijkt niet ingedrukt (veilig) | [ ] | |
+| i_BNS_Open | Ontkoppel sensor draad | PLC leest 1 (NC open circuit) | Eindstand lijkt niet bereikt (veilig - niet stoppen) | [ ] | |
+| i_BNS_Dicht | Ontkoppel sensor draad | PLC leest 1 (NC open circuit) | Eindstand lijkt niet bereikt (veilig - niet stoppen) | [ ] | |
+| i_PBV_BeweegbaarHek | Ontkoppel sensor draad | PLC leest 1 (NC geinverteerd = trigger) | PBV triggert (veilig - motor stopt) | [ ] | |
+
+**Opmerking:** NC sensor draadbreuk = open circuit = logisch 1. Voor PBV betekent dit trigger (veilig gedrag).
+
+**Safety Tests Samenvatting:**
+
+- Totaal tests: 47
+- Geslaagd: ____
+- Gefaald: ____
+- Opmerkingen: ________________________________________________________________
+
+---
+
 *Document gegenereerd voor FAT v1.0 - Automatisch Hek Kerk*
