@@ -47,9 +47,30 @@ VERSION : 0.1
       m_EdgeSS_Dicht : R_TRIG;       // Rising edge key switch DICHT
       m_EdgeDK : F_TRIG;             // Falling edge push button (NC: 0=pressed)
 
-      // Timers
+      // Timers - existing
       m_TON_Timeout : TON;           // Movement timeout (90s per CFG_BewegingTimeoutS)
       m_TON_PBV_Retract : TON;       // PBV retract duration timer (3s per CFG_PBV_TerugtrekMs)
+
+      // Timers - TONR for pausable low speed (TMR-08)
+      m_TONR_LaagToeren : TONR;      // Normal start low speed (5s)
+      m_TONR_VS_LaagToeren : TONR;   // Post-VS resume low speed (2s)
+
+      // Timers - TON for fixed delays
+      m_TON_VS_Hervatting : TON;     // VS resume delay (2s)
+      m_TON_PBV_Pauze : TON;         // PBV pause before retract (500ms)
+
+      // Direction change tracking (TMR-08: reset on direction change)
+      m_VorigeRichting : Int;        // Previous direction for change detection
+
+      // Timer output captures (captured once per scan per TMR-09)
+      m_LowSpeedDone : Bool;         // Start low speed timer complete
+      m_VS_LowSpeedDone : Bool;      // VS low speed timer complete
+      m_VS_ResumeDelayDone : Bool;   // VS resume delay complete
+      m_PBV_PauseDone : Bool;        // PBV pause complete
+
+      // State tracking flags
+      m_VS_ResumeActive : Bool;      // Flag: currently resuming from VS (for VS low speed)
+      m_PBV_Retracting : Bool;       // Flag: PBV retract in progress (after pause)
 
       // Control flags
       m_KeyReleased : Bool := TRUE;  // CTL-08: Key release tracking after timeout
