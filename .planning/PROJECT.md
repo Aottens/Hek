@@ -36,7 +36,16 @@ The gate must stop immediately on any safety trigger (bumper contact or beam int
 
 ### Active
 
-(None - awaiting next milestone definition)
+**v1.1 FAT Documentation**
+- Comprehensive Factory Acceptance Test document in Markdown
+- I/O verification checklist (checkbox format)
+- State machine test tables (all states, all transitions)
+- Feature verification tables (timers, key switch, push button)
+- Edge case coverage (boundary conditions, simultaneous inputs)
+- Dedicated safety section (PBV, VS, fault handling, wire-break tests)
+- All tables include: Test ID, Description, Expected Result, Pass/Fail, Remarks
+- Source: FDS-Automatisch-Hek-v0.2.md + v1.0 SCL code
+- Output: Filled document becomes input for v1.2 bugfix milestone
 
 ### Out of Scope
 
@@ -85,4 +94,4 @@ The gate must stop immediately on any safety trigger (bumper contact or beam int
 | Motor mutual exclusion in FC | Defense in depth | Good |
 
 ---
-*Last updated: 2026-02-06 after v1.0 milestone*
+*Last updated: 2026-02-06 after v1.1 milestone start*
