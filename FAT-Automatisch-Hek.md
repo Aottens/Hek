@@ -246,4 +246,55 @@ ________________________________________________________________
 
 ---
 
+## 5. Control Behavior Tests
+
+**Referentie:** FDS sectie 4.1-4.3
+
+### 5.1 Sleutelschakelaar Tests
+
+**Doel:** Verifieer dat de 3-standen sleutelschakelaar met veerretour correct werkt als momentary edge-triggered bediening.
+
+| Test ID | Voorwaarde | Actie | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|-------|-------------------|-----------|-------------|
+| CTL-01a | IDLE_DICHT | Draai sleutel kort naar OPEN, laat direct los | Hek start MOVING_OPEN | [ ] | Momentary impuls |
+| CTL-01b | CTL-01a uitgevoerd | Observeer beweging na loslaten sleutel | Beweging gaat autonoom door tot eindstand | [ ] | Geen continue input nodig |
+| CTL-01c | IDLE_DICHT | Houd sleutel vast in OPEN positie | Zelfde resultaat als kort draaien (edge-triggered) | [ ] | Stijgende flank detectie |
+| CTL-02a | IDLE_OPEN | Draai sleutel kort naar DICHT, laat direct los | Hek start MOVING_DICHT | [ ] | Momentary impuls |
+| CTL-02b | CTL-02a uitgevoerd | Observeer beweging na loslaten sleutel | Beweging gaat autonoom door tot eindstand | [ ] | Geen continue input nodig |
+| CTL-05a | STOPPED (laatste richting was OPEN) | Draai sleutel naar DICHT | Hek gaat MOVING_DICHT (overschrijft richting) | [ ] | Sleutel override |
+| CTL-05b | STOPPED (laatste richting was DICHT) | Draai sleutel naar OPEN | Hek gaat MOVING_OPEN (overschrijft richting) | [ ] | Sleutel override |
+| CTL-06a | MOVING_OPEN | Draai sleutel naar DICHT | Hek stopt (STOPPED state) | [ ] | Tegengestelde sleutel |
+| CTL-06b | MOVING_DICHT | Draai sleutel naar OPEN | Hek stopt (STOPPED state) | [ ] | Tegengestelde sleutel |
+| CTL-07a | Na 90s timeout in STOPPED | Houd sleutel in OPEN of DICHT | Input genegeerd zolang sleutel vastgehouden | [ ] | Key release vereist |
+| CTL-07b | CTL-07a, sleutels losgelaten | Draai sleutel opnieuw naar OPEN of DICHT | Beweging wordt geaccepteerd | [ ] | Na release, input OK |
+
+**Sleutelschakelaar Tests Samenvatting:**
+
+- Totaal tests: 11
+- Geslaagd: ____
+- Gefaald: ____
+
+---
+
+### 5.2 Drukknop Tests
+
+**Doel:** Verifieer dat de drukknop correct werkt als NC sensor met falling edge detectie (transitie 1→0).
+
+| Test ID | Voorwaarde | Actie | Verwacht Resultaat | Pass/Fail | Opmerkingen |
+|---------|------------|-------|-------------------|-----------|-------------|
+| CTL-03a | MOVING_OPEN | Druk drukknop in (signaal 0) | Motor stopt direct (STOPPED state) | [ ] | Dalende flank |
+| CTL-03b | MOVING_DICHT | Druk drukknop in | Motor stopt direct (STOPPED state) | [ ] | Dalende flank |
+| CTL-03c | MOVING_OPEN | Observeer signaalverloop | Stop bij 1→0 transitie, niet bij vasthouden | [ ] | Edge detection |
+| CTL-04a | STOPPED (laatste richting was OPEN) | Druk drukknop in en los | Hek hervat MOVING_OPEN | [ ] | Hervat laatste richting |
+| CTL-04b | STOPPED (laatste richting was DICHT) | Druk drukknop in en los | Hek hervat MOVING_DICHT | [ ] | Hervat laatste richting |
+| CTL-04c | STOPPED | Houd drukknop vast | Geen hervatting zolang knop ingedrukt | [ ] | Release vereist |
+
+**Drukknop Tests Samenvatting:**
+
+- Totaal tests: 6
+- Geslaagd: ____
+- Gefaald: ____
+
+---
+
 *Document gegenereerd voor FAT v1.0 - Automatisch Hek Kerk*
