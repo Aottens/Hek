@@ -355,17 +355,20 @@ BEGIN
                 // PBV > VS: PBV can interrupt VS_PAUSE (statemachine.mmd line 49)
                 #m_Toestand := "DB_States".STATE_PBV_RETRACT;
             ELSIF NOT #i_VS_Trigger THEN
-                // Beam cleared - auto-resume in saved direction
-                // NOTE: Phase 4 will add CFG_VS_HervattingMs delay before resume
-                // For Phase 3, resume immediately when beam clears
-                IF #m_VorigeRichtingVoorVS = "DB_States".DIR_OPEN THEN
-                    #m_Toestand := "DB_States".STATE_MOVING_OPEN;
-                ELSIF #m_VorigeRichtingVoorVS = "DB_States".DIR_DICHT THEN
-                    #m_Toestand := "DB_States".STATE_MOVING_DICHT;
-                ELSE
-                    // Safety fallback: no saved direction -> go to STOPPED
-                    #m_Toestand := "DB_States".STATE_STOPPED;
+                // Beam cleared - wait for resume delay (TMR-04)
+                IF #m_VS_ResumeDelayDone THEN
+                    // TMR-04 complete: resume movement with low speed
+                    #m_VS_ResumeActive := TRUE;  // Flag for VS low speed timer
+                    IF #m_VorigeRichtingVoorVS = "DB_States".DIR_OPEN THEN
+                        #m_Toestand := "DB_States".STATE_MOVING_OPEN;
+                    ELSIF #m_VorigeRichtingVoorVS = "DB_States".DIR_DICHT THEN
+                        #m_Toestand := "DB_States".STATE_MOVING_DICHT;
+                    ELSE
+                        // Safety fallback: no saved direction -> go to STOPPED
+                        #m_Toestand := "DB_States".STATE_STOPPED;
+                    END_IF;
                 END_IF;
+                // Note: If beam re-triggers during delay, timer resets (TON behavior)
             END_IF;
             // NOTE: Push button and key switch edges are IGNORED in this state (SAF-09)
             // Auto-resume has priority over operator input
@@ -432,8 +435,34 @@ BEGIN
             #q_MS_Dicht := FALSE;
     END_CASE;
 
-    // Low speed placeholder (Phase 4)
-    #q_MS_LaagToeren := FALSE;
+    // =========================================================================
+    // Low speed output determination (TMR-01, TMR-05)
+    // =========================================================================
+    // Low speed active when:
+    // 1. In HOMING (always low speed per FDS 2.2)
+    // 2. In PBV_RETRACT (always low speed per FDS 5.2)
+    // 3. In MOVING_* and start timer not complete (first CFG_LaagToerenMs)
+    // 4. In MOVING_* after VS resume and VS timer not complete (CFG_VS_LaagToerenMs)
+
+    #t_InMovement := (#m_Toestand = "DB_States".STATE_MOVING_OPEN) OR
+                     (#m_Toestand = "DB_States".STATE_MOVING_DICHT);
+
+    // Normal start low speed: during movement, timer not complete
+    #t_NormalLowSpeed := #t_InMovement AND NOT #m_LowSpeedDone;
+
+    // VS resume low speed: after VS, timer not complete
+    #t_VS_LowSpeed := #t_InMovement AND #m_VS_ResumeActive AND NOT #m_VS_LowSpeedDone;
+
+    // Final low speed determination
+    #q_MS_LaagToeren := (#m_Toestand = "DB_States".STATE_HOMING) OR
+                        (#m_Toestand = "DB_States".STATE_PBV_RETRACT) OR
+                        #t_NormalLowSpeed OR
+                        #t_VS_LowSpeed;
+
+    // Clear VS resume flag when VS low speed complete or at endstop
+    IF #m_VS_LowSpeedDone OR #t_ReachedEndstop THEN
+        #m_VS_ResumeActive := FALSE;
+    END_IF;
 
     // Alarm: only deactivated (0) when in IDLE_DICHT
     #q_AlarmKerk := NOT (#m_Toestand = "DB_States".STATE_IDLE_DICHT);
