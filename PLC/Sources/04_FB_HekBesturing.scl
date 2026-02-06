@@ -103,9 +103,9 @@ BEGIN
                    PT := "DB_Config".Timers.CFG_BewegingTimeoutS);
 
     // =========================================================================
-    // PBV retract timer - runs only in PBV_RETRACT state
+    // PBV retract timer - runs only during retract phase (after pause)
     // =========================================================================
-    #m_TON_PBV_Retract(IN := (#m_Toestand = "DB_States".STATE_PBV_RETRACT),
+    #m_TON_PBV_Retract(IN := (#m_Toestand = "DB_States".STATE_PBV_RETRACT) AND #m_PBV_Retracting,
                        PT := "DB_Config".Timers.CFG_PBV_TerugtrekMs);
 
     // =========================================================================
@@ -378,19 +378,33 @@ BEGIN
             // Retracting toward OPEN after bumper activation
             // SAF-03: Always moves toward OPEN regardless of previous direction
             // SAF-05: Ignores ALL operator input during retract
-            // Motor output: q_MS_Open=TRUE (handled in output section)
+            // TMR-02: Wait CFG_PBV_PauzeMs before starting movement
+            // TMR-03: Max retract duration CFG_PBV_TerugtrekMs
 
             // Only FAULT can interrupt PBV_RETRACT (FAULT > PBV priority)
             IF #i_Fault THEN
                 #m_Toestand := "DB_States".STATE_FAULT;
-            ELSIF NOT #i_BNS_Open THEN
-                // NC: 0 = reached OPEN endstop -> safest position achieved
-                #m_Toestand := "DB_States".STATE_IDLE_OPEN;
-            ELSIF #m_TON_PBV_Retract.Q THEN
-                // SAF-04: Max retract duration reached, still in mid-position
-                #m_Toestand := "DB_States".STATE_STOPPED;
-                // Clear direction memory - operator must choose new direction
-                #m_LaatsteRichting := "DB_States".DIR_NONE;
+                #m_PBV_Retracting := FALSE;  // Reset for next time
+            ELSIF NOT #m_PBV_Retracting THEN
+                // PAUSE PHASE: Waiting before retract (TMR-02)
+                // m_TON_PBV_Pauze runs in timer section when in this state AND NOT m_PBV_Retracting
+                IF #m_PBV_PauseDone THEN
+                    // Pause complete - start retract movement
+                    #m_PBV_Retracting := TRUE;
+                END_IF;
+                // Motor outputs are OFF during pause (handled in output section)
+            ELSE
+                // RETRACT PHASE: Moving toward OPEN (motor active)
+                IF NOT #i_BNS_Open THEN
+                    // NC: 0 = reached OPEN endstop -> safest position achieved
+                    #m_Toestand := "DB_States".STATE_IDLE_OPEN;
+                    #m_PBV_Retracting := FALSE;  // Reset for next time
+                ELSIF #m_TON_PBV_Retract.Q THEN
+                    // SAF-04: Max retract duration reached, still in mid-position
+                    #m_Toestand := "DB_States".STATE_STOPPED;
+                    #m_LaatsteRichting := "DB_States".DIR_NONE;  // Clear direction memory
+                    #m_PBV_Retracting := FALSE;  // Reset for next time
+                END_IF;
             END_IF;
             // NOTE: Push button and key switch edges are IGNORED in this state (SAF-05)
             // They are still detected (edge triggers run before CASE) but not acted upon
@@ -423,9 +437,20 @@ BEGIN
     // Motor outputs based on state (direction only, low speed in Phase 4)
     // =========================================================================
     CASE #m_Toestand OF
-        "DB_States".STATE_MOVING_OPEN, "DB_States".STATE_PBV_RETRACT:
+        "DB_States".STATE_MOVING_OPEN:
             #q_MS_Open := TRUE;
             #q_MS_Dicht := FALSE;
+
+        "DB_States".STATE_PBV_RETRACT:
+            // Only output motor during retract phase (after pause)
+            IF #m_PBV_Retracting THEN
+                #q_MS_Open := TRUE;
+                #q_MS_Dicht := FALSE;
+            ELSE
+                // Pause phase - motor off
+                #q_MS_Open := FALSE;
+                #q_MS_Dicht := FALSE;
+            END_IF;
 
         "DB_States".STATE_MOVING_DICHT, "DB_States".STATE_HOMING:
             #q_MS_Open := FALSE;
