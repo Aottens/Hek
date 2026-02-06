@@ -213,42 +213,6 @@
 
 ---
 
-## Totaal Resultaten
-
-| Sectie | Totaal | Geslaagd | Gefaald |
-|--------|--------|----------|---------|
-| 2. Input Verificatie | 7 | ____ | ____ |
-| 3. Output Verificatie | 4 | ____ | ____ |
-| 4.1 State Gedrag | 10 | ____ | ____ |
-| 4.2 State Transities | 36 | ____ | ____ |
-| 5.1 Sleutelschakelaar Tests | 11 | ____ | ____ |
-| 5.2 Drukknop Tests | 6 | ____ | ____ |
-| 6. Timer Tests | 26 | ____ | ____ |
-| **TOTAAL** | **100** | ____ | ____ |
-
-### Eindoordeel
-
-- [ ] **GOEDGEKEURD** - Alle tests geslaagd
-- [ ] **AFGEKEURD** - Zie opmerkingen
-
-**Opmerkingen:**
-
-________________________________________________________________
-
-________________________________________________________________
-
-________________________________________________________________
-
-### Handtekeningen Goedkeuring
-
-| Rol | Naam | Handtekening | Datum |
-|-----|------|--------------|-------|
-| Tester | ________________ | ________________ | ________ |
-| Projectleider | ________________ | ________________ | ________ |
-| Klant | ________________ | ________________ | ________ |
-
----
-
 ## 5. Control Behavior Tests
 
 **Referentie:** FDS sectie 4.1-4.3
@@ -510,4 +474,161 @@ ________________________________________________________________
 
 ---
 
-*Document gegenereerd voor FAT v1.0 - Automatisch Hek Kerk*
+## 9. Test Summary
+
+### 9.1 Totaal Resultaten
+
+| Sectie | Tests | Geslaagd | Gefaald | N.v.t. |
+|--------|-------|----------|---------|--------|
+| 2. Input Verificatie | 7 | ____ | ____ | ____ |
+| 3. Output Verificatie | 4 | ____ | ____ | ____ |
+| 4.1 State Gedrag | 10 | ____ | ____ | ____ |
+| 4.2 State Transities | 36 | ____ | ____ | ____ |
+| 5.1 Sleutelschakelaar Tests | 11 | ____ | ____ | ____ |
+| 5.2 Drukknop Tests | 6 | ____ | ____ | ____ |
+| 6. Timer Tests | 26 | ____ | ____ | ____ |
+| 7. Edge Case Tests | 23 | ____ | ____ | ____ |
+| 8. Safety Tests | 47 | ____ | ____ | ____ |
+| **TOTAAL** | **170** | ____ | ____ | ____ |
+
+### 9.2 Eindoordeel
+
+- [ ] **GOEDGEKEURD** - Alle tests geslaagd
+- [ ] **AFGEKEURD** - Zie opmerkingen
+
+**Opmerkingen:**
+
+________________________________________________________________
+
+________________________________________________________________
+
+________________________________________________________________
+
+---
+
+## 10. Traceability Matrix
+
+**Doel:** Koppeling tussen requirements en test IDs voor volledige traceerbaarheid.
+
+### 10.1 I/O Requirements
+
+| Requirement | Beschrijving | Test ID(s) | Status |
+|-------------|--------------|------------|--------|
+| IO-01 | Input verificatie (7 inputs) | IO-INP-01 t/m IO-INP-07 | [ ] |
+| IO-02 | Output verificatie (4 outputs) | IO-OUT-01 t/m IO-OUT-04 | [ ] |
+| IO-03 | I/O entry formaat | Alle I/O tests | [ ] |
+
+### 10.2 State Machine Requirements
+
+| Requirement | Beschrijving | Test ID(s) | Status |
+|-------------|--------------|------------|--------|
+| STATE-01 | 9 states gedrag | SM-STATE-01 t/m SM-STATE-09 | [ ] |
+| STATE-02 | State transities | SM-TRANS-01 t/m SM-TRANS-36 | [ ] |
+| STATE-03 | Test formaat | Alle SM tests | [ ] |
+
+### 10.3 Control Requirements
+
+| Requirement | Beschrijving | Test ID(s) | Status |
+|-------------|--------------|------------|--------|
+| CTL-01 | Sleutel OPEN (momentary, rising edge) | CTL-01a t/m CTL-01c | [ ] |
+| CTL-02 | Sleutel DICHT (momentary, rising edge) | CTL-02a, CTL-02b | [ ] |
+| CTL-03 | Drukknop stop (falling edge, NC) | CTL-03a t/m CTL-03c | [ ] |
+| CTL-04 | Drukknop resume (laatste richting) | CTL-04a t/m CTL-04c | [ ] |
+| CTL-05 | Sleutel override richting | CTL-05a, CTL-05b | [ ] |
+| CTL-06 | Tegengestelde sleutel -> STOPPED | CTL-06a, CTL-06b | [ ] |
+| CTL-07 | Sleutel release na timeout | CTL-07a, CTL-07b | [ ] |
+
+### 10.4 Timer Requirements
+
+| Requirement | Beschrijving | Test ID(s) | Status |
+|-------------|--------------|------------|--------|
+| TMR-01 | Start lage snelheid (5s) | TMR-01a t/m TMR-01c | [ ] |
+| TMR-02 | PBV pauze (500ms) | TMR-02a t/m TMR-02c | [ ] |
+| TMR-03 | PBV terugtrek (3s) | TMR-03a t/m TMR-03c | [ ] |
+| TMR-04 | VS hervatting vertraging (2s) | TMR-04a t/m TMR-04c | [ ] |
+| TMR-05 | VS lage snelheid (2s) | TMR-05a t/m TMR-05c | [ ] |
+| TMR-06 | Beweging timeout (90s) | TMR-06a t/m TMR-06c | [ ] |
+| TMR-07 | Timer pause/resume | TMR-07a t/m TMR-07d | [ ] |
+| TMR-08 | Timer reset | TMR-08a t/m TMR-08d | [ ] |
+
+### 10.5 Edge Case Requirements
+
+| Requirement | Beschrijving | Test ID(s) | Status |
+|-------------|--------------|------------|--------|
+| EDGE-01 | Drukknop bij IDLE (geen actie) | EDGE-01a t/m EDGE-01c | [ ] |
+| EDGE-02 | PBV bij IDLE_OPEN (blijven) | EDGE-02a, EDGE-02b | [ ] |
+| EDGE-03 | Richtingsgeheugen gewist bij eindstand | EDGE-03a t/m EDGE-03c | [ ] |
+| EDGE-04 | Drukknop tijdens HOMING | EDGE-04a t/m EDGE-04c | [ ] |
+| EDGE-05 | Bediening genegeerd tijdens PBV_RETRACT | EDGE-05a t/m EDGE-05d | [ ] |
+| EDGE-06 | Bediening genegeerd tijdens VS_PAUSE | EDGE-06a t/m EDGE-06d | [ ] |
+| EDGE-07 | PBV tijdens VS_PAUSE (PBV wint) | EDGE-07a t/m EDGE-07d | [ ] |
+
+### 10.6 Safety Requirements
+
+| Requirement | Beschrijving | Test ID(s) | Status |
+|-------------|--------------|------------|--------|
+| SAF-01 | PBV detectie + 500ms pauze + retract | SAF-01a t/m SAF-01e | [ ] |
+| SAF-02 | PBV altijd richting OPEN | SAF-02a t/m SAF-02c | [ ] |
+| SAF-03 | VS detectie + auto-resume | SAF-03a t/m SAF-03e | [ ] |
+| SAF-04 | FAULT detectie (beide eindstanden) | SAF-04a t/m SAF-04c | [ ] |
+| SAF-05 | FAULT auto-recovery | SAF-05a t/m SAF-05c | [ ] |
+| SAF-06 | Prioriteit FAULT > PBV > VS | SAF-06a t/m SAF-06d | [ ] |
+| SAF-07 | Debounce gedrag | SAF-07a t/m SAF-07e | [ ] |
+| SAF-08 | Motor mutual exclusion | SAF-08a t/m SAF-08d | [ ] |
+| SAF-09 | Alarm fail-safe | SAF-09a t/m SAF-09d | [ ] |
+| SAF-10 | Wire-break NC sensoren | Wire-break tabel (4 tests) | [ ] |
+
+### 10.7 Documentation Requirements
+
+| Requirement | Beschrijving | Verificatie | Status |
+|-------------|--------------|-------------|--------|
+| DOC-01 | Markdown formaat | Document is .md bestand | [ ] |
+| DOC-02 | Consistente tabel structuur | Alle secties gebruiken tabellen | [ ] |
+| DOC-03 | Opmerkingen kolom | Elke tabel heeft opmerkingen kolom | [ ] |
+| DOC-04 | Printbaar/bruikbaar | Geen complexe Markdown features | [ ] |
+| DOC-05 | Test IDs traceerbaar | Deze traceability matrix | [ ] |
+
+---
+
+## 11. Sign-off
+
+### 11.1 Test Uitvoering
+
+| Rol | Naam | Handtekening | Datum |
+|-----|------|--------------|-------|
+| Tester | ________________ | ________________ | ________ |
+| Getuige | ________________ | ________________ | ________ |
+
+### 11.2 Goedkeuring
+
+| Rol | Naam | Handtekening | Datum |
+|-----|------|--------------|-------|
+| Projectleider | ________________ | ________________ | ________ |
+| Klant | ________________ | ________________ | ________ |
+
+### 11.3 Afwijkingen Goedkeuring
+
+Indien tests afgekeurd of N.v.t., documenteer hier de afwijkingen en goedkeuring:
+
+| Test ID | Afwijking | Actie | Goedgekeurd door | Datum |
+|---------|-----------|-------|------------------|-------|
+| | | | | |
+| | | | | |
+| | | | | |
+
+---
+
+## Document Footer
+
+| Veld | Waarde |
+|------|--------|
+| FAT Document Versie | 1.0 |
+| Gebaseerd op | FDS-Automatisch-Hek v0.2, v1.0 SCL code |
+| Gegenereerd | 2026-02-06 |
+| Totaal Test Cases | 170 |
+| Pagina's | (invullen bij print) |
+
+---
+
+*FAT Document: Automatisch Hek Kerk - Versie 1.0*
+*Referenties: FDS-Automatisch-Hek v0.2, statemachine.mmd, v1.0 SCL code*
