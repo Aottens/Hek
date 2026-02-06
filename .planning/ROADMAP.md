@@ -13,7 +13,7 @@ This roadmap delivers TIA Portal v20 SCL code for an S7-1212C controlling an aut
 - [x] **Phase 1: Foundation** - Block structure, DB_Config, SCL file templates
 - [x] **Phase 2: Safety Core** - FB_Veiligheid, sensor debouncing, safety priority
 - [x] **Phase 3: State Machine** - FB_HekBesturing, 9-state logic, control inputs
-- [ ] **Phase 4: Integration** - FC_Outputs, timer sequences, OB1 orchestration
+- [x] **Phase 4: Integration** - FC_Outputs, timer sequences, OB1 orchestration
 
 ## Phase Details
 
@@ -78,8 +78,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Timer infrastructure and low speed logic (TONR timers, direction change detection)
-- [ ] 04-02-PLAN.md — VS resume delay, PBV pause timer, FC_Outputs mutual exclusion
+- [x] 04-01-PLAN.md — Timer infrastructure and low speed logic (TONR timers, direction change detection)
+- [x] 04-02-PLAN.md — VS resume delay, PBV pause timer, FC_Outputs mutual exclusion
 
 ## Progress
 
@@ -91,7 +91,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation | 2/2 | Complete | 2026-02-03 |
 | 2. Safety Core | 2/2 | Complete | 2026-02-03 |
 | 3. State Machine | 3/3 | Complete | 2026-02-03 |
-| 4. Integration | 0/2 | Planned | - |
+| 4. Integration | 2/2 | Complete | 2026-02-06 |
 
 ---
 *Roadmap created: 2026-02-02*
@@ -103,4 +103,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 *Phase 3 planned: 2026-02-03*
 *Phase 3 completed: 2026-02-03*
 *Phase 4 planned: 2026-02-06*
+*Phase 4 completed: 2026-02-06*
 *Coverage: 42/42 v1 requirements mapped*
