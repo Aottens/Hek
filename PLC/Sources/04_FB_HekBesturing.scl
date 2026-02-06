@@ -77,6 +77,15 @@ VERSION : 0.1
       m_FirstScan : Bool := TRUE;    // Power-on detection for initialization
    END_VAR
 
+VAR_TEMP
+    t_DirectionChanged : Bool;     // Direction change detected this scan
+    t_MotorMoving : Bool;          // Motor in normal movement state
+    t_ReachedEndstop : Bool;       // At endstop (for timer reset)
+    t_InMovement : Bool;           // In any movement state (for low speed calc)
+    t_NormalLowSpeed : Bool;       // Normal start low speed needed
+    t_VS_LowSpeed : Bool;          // VS resume low speed needed
+END_VAR
+
 BEGIN
     // =========================================================================
     // Edge detection - call BEFORE CASE statement (ensures edges detected once per scan)
@@ -98,6 +107,63 @@ BEGIN
     // =========================================================================
     #m_TON_PBV_Retract(IN := (#m_Toestand = "DB_States".STATE_PBV_RETRACT),
                        PT := "DB_Config".Timers.CFG_PBV_TerugtrekMs);
+
+    // =========================================================================
+    // Direction change detection (TMR-08: reset timer on direction change)
+    // =========================================================================
+    #t_DirectionChanged := (#m_LaatsteRichting <> #m_VorigeRichting) AND
+                           (#m_LaatsteRichting <> "DB_States".DIR_NONE) AND
+                           (#m_VorigeRichting <> "DB_States".DIR_NONE);
+    #m_VorigeRichting := #m_LaatsteRichting;
+
+    // =========================================================================
+    // Computed conditions for timer logic
+    // =========================================================================
+    // Motor moving in normal movement states
+    #t_MotorMoving := (#m_Toestand = "DB_States".STATE_MOVING_OPEN) OR
+                      (#m_Toestand = "DB_States".STATE_MOVING_DICHT);
+
+    // Reached endstop (timer reset condition) - NC: 0 = reached
+    #t_ReachedEndstop := (NOT #i_BNS_Open) OR (NOT #i_BNS_Dicht);
+
+    // =========================================================================
+    // Low speed timer - pausable TONR (TMR-01, TMR-08)
+    // Accumulates during movement, pauses on stop, resets on direction change
+    // =========================================================================
+    #m_TONR_LaagToeren(
+        IN := #t_MotorMoving,
+        PT := "DB_Config".Timers.CFG_LaagToerenMs,
+        R := #t_DirectionChanged OR #t_ReachedEndstop,
+        Q => #m_LowSpeedDone
+    );
+
+    // =========================================================================
+    // Post-VS resume low speed timer (TMR-05)
+    // =========================================================================
+    #m_TONR_VS_LaagToeren(
+        IN := #t_MotorMoving AND #m_VS_ResumeActive,
+        PT := "DB_Config".Timers.CFG_VS_LaagToerenMs,
+        R := #t_DirectionChanged OR #t_ReachedEndstop OR (NOT #m_VS_ResumeActive),
+        Q => #m_VS_LowSpeedDone
+    );
+
+    // =========================================================================
+    // VS resume delay timer (TMR-04)
+    // =========================================================================
+    #m_TON_VS_Hervatting(
+        IN := (#m_Toestand = "DB_States".STATE_VS_PAUSE) AND (NOT #i_VS_Trigger),
+        PT := "DB_Config".Timers.CFG_VS_HervattingMs,
+        Q => #m_VS_ResumeDelayDone
+    );
+
+    // =========================================================================
+    // PBV pause timer (TMR-02)
+    // =========================================================================
+    #m_TON_PBV_Pauze(
+        IN := (#m_Toestand = "DB_States".STATE_PBV_RETRACT) AND (NOT #m_PBV_Retracting),
+        PT := "DB_Config".Timers.CFG_PBV_PauzeMs,
+        Q => #m_PBV_PauseDone
+    );
 
     // =========================================================================
     // Power-on initialization - determine initial state from endstops
