@@ -368,4 +368,47 @@ ________________________________________________________________
 
 ---
 
+## 7. Edge Case Tests
+
+**Referentie:** FB_HekBesturing edge cases
+
+**Doel:** Verifieer het correct gedrag van het systeem in grensgevallen en bijzondere situaties.
+
+### 7.1 Edge Case Verificatie
+
+| Test ID | Voorwaarde | Actie | Verwacht Resultaat | Reden | Pass/Fail | Opmerkingen |
+|---------|------------|-------|-------------------|-------|-----------|-------------|
+| EDGE-01a | IDLE_DICHT | Druk drukknop in | Geen actie, hek blijft IDLE_DICHT | Geen richtingsgeheugen bij eindstand | [ ] | |
+| EDGE-01b | IDLE_OPEN | Druk drukknop in | Geen actie, hek blijft IDLE_OPEN | Geen richtingsgeheugen bij eindstand | [ ] | |
+| EDGE-01c | N.v.t. | Analyseer logica | Drukknop bij IDLE heeft geen effect | Niets te hervatten, sleutel vereist | [ ] | |
+| EDGE-02a | IDLE_OPEN | Trigger PBV (druk rubber bumper) | Geen actie, hek blijft IDLE_OPEN | Al in veiligste positie (volledig open) | [ ] | |
+| EDGE-02b | N.v.t. | Analyseer logica | PBV bij IDLE_OPEN heeft geen effect | Terugtrekken naar OPEN is zinloos, al daar | [ ] | |
+| EDGE-03a | MOVING_OPEN | Wacht tot IDLE_OPEN bereikt | State wordt IDLE_OPEN | Normale transitie | [ ] | |
+| EDGE-03b | IDLE_OPEN (na EDGE-03a) | Druk drukknop in | Geen actie, geen hervatting | Richtingsgeheugen gewist bij eindstand | [ ] | |
+| EDGE-03c | IDLE_OPEN (na EDGE-03b) | Draai sleutel DICHT | Hek start MOVING_DICHT | Alleen sleutel kan nieuwe beweging starten | [ ] | |
+| EDGE-04a | Power on, onbekende positie | Observeer | Hek start HOMING (langzaam naar DICHT) | Initialisatie procedure | [ ] | |
+| EDGE-04b | HOMING actief | Druk drukknop in | Hek stopt, STOPPED state | Gebruiker veiligheids-override tijdens homing | [ ] | |
+| EDGE-04c | N.v.t. | Analyseer logica | Drukknop tijdens HOMING toegestaan | Gebruiker moet kunnen ingrijpen bij homing | [ ] | |
+| EDGE-05a | MOVING_DICHT | Trigger PBV | Hek gaat naar PBV_RETRACT | PBV gedetecteerd | [ ] | |
+| EDGE-05b | PBV_RETRACT actief | Draai sleutel DICHT | Genegeerd, terugtrekken gaat door | Veiligheidsterugtrekking moet voltooien | [ ] | |
+| EDGE-05c | PBV_RETRACT actief | Druk drukknop in | Genegeerd, terugtrekken gaat door | Veiligheidsterugtrekking moet voltooien | [ ] | |
+| EDGE-05d | N.v.t. | Analyseer logica | Bediening genegeerd tijdens PBV_RETRACT | Veiligheid heeft prioriteit | [ ] | |
+| EDGE-06a | MOVING_DICHT | Blokkeer lichtsluis | Hek stopt, VS_PAUSE state | VS gedetecteerd | [ ] | |
+| EDGE-06b | VS_PAUSE actief | Draai sleutel (beide richtingen) | Genegeerd, wacht op beam herstel | Auto-hervatting heeft prioriteit | [ ] | |
+| EDGE-06c | VS_PAUSE actief | Druk drukknop in | Genegeerd, wacht op beam herstel | Auto-hervatting heeft prioriteit | [ ] | |
+| EDGE-06d | N.v.t. | Analyseer logica | Bediening genegeerd tijdens VS_PAUSE | Systeem wacht op veilige conditie | [ ] | |
+| EDGE-07a | MOVING_DICHT | Blokkeer lichtsluis | Hek stopt, VS_PAUSE state | VS gedetecteerd | [ ] | |
+| EDGE-07b | VS_PAUSE actief | Trigger PBV (druk rubber bumper) | Hek gaat naar PBV_RETRACT (niet blijven in VS_PAUSE) | PBV heeft hogere prioriteit dan VS | [ ] | |
+| EDGE-07c | PBV_RETRACT (na EDGE-07b) | Observeer | Hek trekt terug richting OPEN | PBV > VS prioriteit bevestigd | [ ] | |
+| EDGE-07d | N.v.t. | Analyseer logica | Prioriteitsvolgorde: FAULT > PBV > VS | Hogere veiligheidsprioriteit wint altijd | [ ] | |
+
+**Edge Case Tests Samenvatting:**
+
+- Totaal tests: 23
+- Geslaagd: ____
+- Gefaald: ____
+- Opmerkingen: ________________________________________________________________
+
+---
+
 *Document gegenereerd voor FAT v1.0 - Automatisch Hek Kerk*
