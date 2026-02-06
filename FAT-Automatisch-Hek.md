@@ -89,3 +89,161 @@
 - Opmerkingen: ________________________________________________________________
 
 ---
+
+## 4. State Machine Tests
+
+**Referentie:** statemachine.mmd (canonieke bron)
+
+### 4.1 State Gedrag Tests
+
+**Doel:** Verifieer dat elke state de correcte motor en alarm outputs heeft.
+
+**Procedure:** Breng het systeem in elke state en verifieer de outputs.
+
+| Test ID | State | Motor Open | Motor Dicht | LaagToeren | Alarm | Pass/Fail | Opmerkingen |
+|---------|-------|------------|-------------|------------|-------|-----------|-------------|
+| SM-STATE-01 | HOMING | OFF (0) | ON (1) | ON (1) | OFF (1) | [ ] | Langzaam naar DICHT |
+| SM-STATE-02 | IDLE_OPEN | OFF (0) | OFF (0) | OFF (0) | OFF (1) | [ ] | Hek volledig open |
+| SM-STATE-03 | IDLE_DICHT | OFF (0) | OFF (0) | OFF (0) | ON (0) | [ ] | Fail-safe alarm actief |
+| SM-STATE-04 | MOVING_OPEN | ON (1) | OFF (0) | (timer) | OFF (1) | [ ] | LaagToeren eerste 5s |
+| SM-STATE-05 | MOVING_DICHT | OFF (0) | ON (1) | (timer) | OFF (1) | [ ] | LaagToeren eerste 5s |
+| SM-STATE-06 | STOPPED | OFF (0) | OFF (0) | OFF (0) | OFF (1) | [ ] | In tussenpositie |
+| SM-STATE-07 | VS_PAUSE | OFF (0) | OFF (0) | OFF (0) | OFF (1) | [ ] | Beam onderbroken |
+| SM-STATE-08a | PBV_RETRACT (pauze fase) | OFF (0) | OFF (0) | OFF (0) | OFF (1) | [ ] | 500ms wachten |
+| SM-STATE-08b | PBV_RETRACT (terugtrek fase) | ON (1) | OFF (0) | ON (1) | OFF (1) | [ ] | Richting OPEN, laag |
+| SM-STATE-09 | FAULT | OFF (0) | OFF (0) | OFF (0) | OFF (1) | [ ] | Beide eindstanden |
+
+**State Gedrag Samenvatting:**
+
+- Totaal tests: 10
+- Geslaagd: ____
+- Gefaald: ____
+
+---
+
+### 4.2 State Transitie Tests
+
+**Doel:** Verifieer alle state transities volgens statemachine.mmd.
+
+**Procedure:** Breng het systeem in de voorwaarde state, activeer de trigger, en verifieer de nieuwe state.
+
+#### Power-on Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-01 | Power On | BNS_Dicht actief (=0) | IDLE_DICHT | [ ] | |
+| SM-TRANS-02 | Power On | BNS_Open actief (=0) | IDLE_OPEN | [ ] | |
+| SM-TRANS-03 | Power On | Geen eindstand actief | HOMING | [ ] | |
+| SM-TRANS-04 | Power On | Beide eindstanden (=0) | FAULT | [ ] | |
+
+#### HOMING Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-05 | HOMING | Eindstand DICHT bereikt | IDLE_DICHT | [ ] | |
+| SM-TRANS-06a | HOMING | PBV trigger | STOPPED | [ ] | Afgebroken |
+| SM-TRANS-06b | HOMING | VS trigger (beam) | STOPPED | [ ] | Afgebroken |
+| SM-TRANS-07 | HOMING | Beide eindstanden actief | FAULT | [ ] | |
+
+#### IDLE Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-08 | IDLE_DICHT | Sleutel OPEN | MOVING_OPEN | [ ] | |
+| SM-TRANS-09 | IDLE_OPEN | Sleutel DICHT | MOVING_DICHT | [ ] | |
+| SM-TRANS-10 | IDLE_DICHT | Beide eindstanden actief | FAULT | [ ] | |
+| SM-TRANS-11 | IDLE_OPEN | Beide eindstanden actief | FAULT | [ ] | |
+
+#### Movement Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-12 | MOVING_OPEN | BNS_Open bereikt | IDLE_OPEN | [ ] | |
+| SM-TRANS-13 | MOVING_DICHT | BNS_Dicht bereikt | IDLE_DICHT | [ ] | |
+| SM-TRANS-14 | MOVING_OPEN | Drukknop | STOPPED | [ ] | |
+| SM-TRANS-15 | MOVING_DICHT | Drukknop | STOPPED | [ ] | |
+| SM-TRANS-16 | MOVING_OPEN | VS beam onderbroken | VS_PAUSE | [ ] | |
+| SM-TRANS-17 | MOVING_DICHT | VS beam onderbroken | VS_PAUSE | [ ] | |
+| SM-TRANS-18 | MOVING_OPEN | PBV bumper trigger | PBV_RETRACT | [ ] | |
+| SM-TRANS-19 | MOVING_DICHT | PBV bumper trigger | PBV_RETRACT | [ ] | |
+| SM-TRANS-20 | MOVING_OPEN | Beide eindstanden actief | FAULT | [ ] | |
+| SM-TRANS-21 | MOVING_DICHT | Beide eindstanden actief | FAULT | [ ] | |
+
+#### STOPPED Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-22 | STOPPED (richting was OPEN) | Drukknop | MOVING_OPEN | [ ] | Hervat richting |
+| SM-TRANS-23 | STOPPED (richting was DICHT) | Drukknop | MOVING_DICHT | [ ] | Hervat richting |
+| SM-TRANS-24 | STOPPED | Sleutel OPEN | MOVING_OPEN | [ ] | |
+| SM-TRANS-25 | STOPPED | Sleutel DICHT | MOVING_DICHT | [ ] | |
+| SM-TRANS-26 | STOPPED | Beide eindstanden actief | FAULT | [ ] | |
+
+#### VS_PAUSE Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-27 | VS_PAUSE (richting was OPEN) | Beam OK + timer (2s) | MOVING_OPEN | [ ] | Auto-hervatting |
+| SM-TRANS-28 | VS_PAUSE (richting was DICHT) | Beam OK + timer (2s) | MOVING_DICHT | [ ] | Auto-hervatting |
+| SM-TRANS-29 | VS_PAUSE | PBV bumper trigger | PBV_RETRACT | [ ] | PBV > VS |
+| SM-TRANS-30 | VS_PAUSE | Beide eindstanden actief | FAULT | [ ] | |
+
+#### PBV_RETRACT Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-31 | PBV_RETRACT | Timer + BNS_Open bereikt | IDLE_OPEN | [ ] | Eindstand eerst |
+| SM-TRANS-32 | PBV_RETRACT | Timer klaar (tussenpositie) | STOPPED | [ ] | Max 3s retract |
+| SM-TRANS-33 | PBV_RETRACT | Beide eindstanden actief | FAULT | [ ] | |
+
+#### FAULT Transities
+
+| Test ID | Voorwaarde | Trigger | Verwacht State | Pass/Fail | Opmerkingen |
+|---------|------------|---------|----------------|-----------|-------------|
+| SM-TRANS-34 | FAULT | Sensor herstel + BNS_Dicht | IDLE_DICHT | [ ] | Auto recovery |
+| SM-TRANS-35 | FAULT | Sensor herstel + BNS_Open | IDLE_OPEN | [ ] | Auto recovery |
+| SM-TRANS-36 | FAULT | Sensor herstel + geen eindstand | STOPPED | [ ] | Auto recovery |
+
+**State Transitie Samenvatting:**
+
+- Totaal tests: 36
+- Geslaagd: ____
+- Gefaald: ____
+- Opmerkingen: ________________________________________________________________
+
+---
+
+## Totaal Resultaten
+
+| Sectie | Totaal | Geslaagd | Gefaald |
+|--------|--------|----------|---------|
+| 2. Input Verificatie | 7 | ____ | ____ |
+| 3. Output Verificatie | 4 | ____ | ____ |
+| 4.1 State Gedrag | 10 | ____ | ____ |
+| 4.2 State Transities | 36 | ____ | ____ |
+| **TOTAAL** | **57** | ____ | ____ |
+
+### Eindoordeel
+
+- [ ] **GOEDGEKEURD** - Alle tests geslaagd
+- [ ] **AFGEKEURD** - Zie opmerkingen
+
+**Opmerkingen:**
+
+________________________________________________________________
+
+________________________________________________________________
+
+________________________________________________________________
+
+### Handtekeningen Goedkeuring
+
+| Rol | Naam | Handtekening | Datum |
+|-----|------|--------------|-------|
+| Tester | ________________ | ________________ | ________ |
+| Projectleider | ________________ | ________________ | ________ |
+| Klant | ________________ | ________________ | ________ |
+
+---
+
+*Document gegenereerd voor FAT v1.0 - Automatisch Hek Kerk*
