@@ -221,7 +221,10 @@
 | 3. Output Verificatie | 4 | ____ | ____ |
 | 4.1 State Gedrag | 10 | ____ | ____ |
 | 4.2 State Transities | 36 | ____ | ____ |
-| **TOTAAL** | **57** | ____ | ____ |
+| 5.1 Sleutelschakelaar Tests | 11 | ____ | ____ |
+| 5.2 Drukknop Tests | 6 | ____ | ____ |
+| 6. Timer Tests | 26 | ____ | ____ |
+| **TOTAAL** | **100** | ____ | ____ |
 
 ### Eindoordeel
 
@@ -292,6 +295,74 @@ ________________________________________________________________
 **Drukknop Tests Samenvatting:**
 
 - Totaal tests: 6
+- Geslaagd: ____
+- Gefaald: ____
+
+---
+
+## 6. Timer Behavior Tests
+
+**Referentie:** FDS sectie 4.4 + DB_Config parameters
+
+### 6.1 Timer Parameters
+
+| Parameter | Waarde | Beschrijving |
+|-----------|--------|--------------|
+| CFG_LaagToerenMs | 5000ms (5s) | Lage snelheid bij start beweging |
+| CFG_PBV_PauzeMs | 500ms | Pauze voor PBV terugtrekken |
+| CFG_PBV_TerugtrekMs | 3000ms (3s) | Max duur PBV terugtrekbeweging |
+| CFG_VS_HervattingMs | 2000ms (2s) | Wachttijd na beam herstel |
+| CFG_VS_LaagToerenMs | 2000ms (2s) | Lage snelheid na VS hervatting |
+| CFG_BewegingTimeoutS | 90000ms (90s) | Maximale bewegingsduur |
+
+### 6.2 Timer Tests
+
+| Test ID | Timer Parameter | Trigger | Duur | Verificatie Methode | Pass/Fail | Opmerkingen |
+|---------|-----------------|---------|------|---------------------|-----------|-------------|
+| TMR-01a | CFG_LaagToerenMs | Start beweging vanuit IDLE | - | Observeer q_MS_LaagToeren actief na start | [ ] | Timer start |
+| TMR-01b | CFG_LaagToerenMs | - | 5s | Meet duur met stopwatch | [ ] | Exacte timing |
+| TMR-01c | CFG_LaagToerenMs | Timer verlopen | - | q_MS_LaagToeren gaat UIT (normale snelheid) | [ ] | Timer afgelopen |
+| TMR-02a | CFG_PBV_PauzeMs | PBV trigger tijdens beweging | - | Motor stopt direct | [ ] | Pauze start |
+| TMR-02b | CFG_PBV_PauzeMs | - | 500ms | Meet pauze duur | [ ] | Wachten |
+| TMR-02c | CFG_PBV_PauzeMs | Pauze verlopen | - | Motor start richting OPEN | [ ] | Terugtrekken |
+| TMR-03a | CFG_PBV_TerugtrekMs | Na PBV pauze | - | Motor start OPEN met lage snelheid | [ ] | Retract start |
+| TMR-03b | CFG_PBV_TerugtrekMs | - | max 3s | Meet terugtrek duur | [ ] | Max duration |
+| TMR-03c | CFG_PBV_TerugtrekMs | Timer OF BNS_Open bereikt | - | Motor stopt (wat het eerst komt) | [ ] | Stopcondities |
+| TMR-04a | CFG_VS_HervattingMs | VS beam onderbroken tijdens beweging | - | Motor stopt (VS_PAUSE state) | [ ] | VS trigger |
+| TMR-04b | CFG_VS_HervattingMs | Beam hersteld (1) | 2s | Meet wachttijd na beam herstel | [ ] | Resume delay |
+| TMR-04c | CFG_VS_HervattingMs | Timer verlopen | - | Beweging hervat in zelfde richting | [ ] | Auto-resume |
+| TMR-05a | CFG_VS_LaagToerenMs | Na VS hervatting | - | q_MS_LaagToeren actief | [ ] | Laag na VS |
+| TMR-05b | CFG_VS_LaagToerenMs | - | 2s | Meet lage snelheid duur | [ ] | Timer check |
+| TMR-05c | CFG_VS_LaagToerenMs | Timer verlopen | - | Normale snelheid hervat | [ ] | Timer afgelopen |
+| TMR-06a | CFG_BewegingTimeoutS | Start beweging, blokkeer eindstand | - | Beweging start | [ ] | Timeout test |
+| TMR-06b | CFG_BewegingTimeoutS | - | 90s | Meet totale bewegingsduur | [ ] | Max 90 seconden |
+| TMR-06c | CFG_BewegingTimeoutS | Timeout bereikt | - | Motor stopt (STOPPED), key release vereist | [ ] | Zie CTL-07 |
+
+### 6.3 Timer Pause/Resume Tests
+
+**Doel:** Verifieer dat TONR timers pauzeren bij stop en hervatten bij restart.
+
+| Test ID | Timer Parameter | Trigger | Duur | Verificatie Methode | Pass/Fail | Opmerkingen |
+|---------|-----------------|---------|------|---------------------|-----------|-------------|
+| TMR-07a | CFG_LaagToerenMs | Start beweging, wacht 2s | 2s | Observeer q_MS_LaagToeren actief | [ ] | Timer loopt |
+| TMR-07b | CFG_LaagToerenMs | Druk stop knop na 2s | - | Timer pauzeert bij 2s geaccumuleerd | [ ] | TONR pause |
+| TMR-07c | CFG_LaagToerenMs | Hervat beweging | - | Timer hervat vanaf 2s | [ ] | Resume |
+| TMR-07d | CFG_LaagToerenMs | Na totaal 5s bewegingstijd | - | q_MS_LaagToeren gaat UIT | [ ] | Correct totaal |
+
+### 6.4 Timer Reset Tests
+
+**Doel:** Verifieer dat timers resetten bij richtingswisseling of bereiken eindstand.
+
+| Test ID | Timer Parameter | Trigger | Duur | Verificatie Methode | Pass/Fail | Opmerkingen |
+|---------|-----------------|---------|------|---------------------|-----------|-------------|
+| TMR-08a | CFG_LaagToerenMs | Start OPEN, wacht 3s | 3s | q_MS_LaagToeren actief | [ ] | Timer loopt |
+| TMR-08b | CFG_LaagToerenMs | Sleutel DICHT (richtingswisseling) | - | Timer reset naar 0 | [ ] | Direction change |
+| TMR-08c | CFG_LaagToerenMs | Nieuwe beweging DICHT | - | q_MS_LaagToeren actief voor volle 5s | [ ] | Fresh timer |
+| TMR-08d | CFG_LaagToerenMs | Bereik eindstand | - | Timer reset voor volgende beweging | [ ] | Endstop reset |
+
+**Timer Tests Samenvatting:**
+
+- Totaal tests: 26
 - Geslaagd: ____
 - Gefaald: ____
 
