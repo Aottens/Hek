@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 ## Current Position
 
-Phase: 3 of 4 (State Machine)
-Plan: 3 of 3 in current phase
-Status: Phase complete, verified
-Last activity: 2026-02-03 - Phase 3 verified (7/7 must-haves)
+Phase: 4 of 4 (Integration)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-06 - Completed 04-01-PLAN.md
 
-Progress: [########░░] 75%
+Progress: [########░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 2 min
-- Total execution time: 14 min
+- Total execution time: 17 min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [########░░] 75%
 | 01-foundation | 2 | 4 min | 2 min |
 | 02-safety-core | 2 | 4 min | 2 min |
 | 03-state-machine | 3 | 6 min | 2 min |
+| 04-integration | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (1 min), 03-01 (2 min), 03-02 (2 min), 03-03 (2 min)
+- Last 5 plans: 03-01 (2 min), 03-02 (2 min), 03-03 (2 min), 04-01 (3 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -68,6 +69,11 @@ Recent decisions affecting current work:
 - [03-03]: PBV_RETRACT clears direction memory on timeout exit (safety)
 - [03-03]: VS_PAUSE immediate resume (Phase 4 adds delay timer)
 - [03-03]: Only FAULT can interrupt PBV_RETRACT (highest safety response)
+- [04-01]: TONR for pausable low speed timers (built-in pause/resume, reset via R)
+- [04-01]: Two separate low speed timers (5s start, 2s VS resume)
+- [04-01]: All timers called before CASE statement (TMR-09)
+- [04-01]: Direction change detection excludes DIR_NONE transitions
+- [04-01]: m_VS_ResumeActive flag tracks VS resume context
 
 ### Pending Todos
 
@@ -79,10 +85,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-03
-Stopped at: Phase 3 complete and verified - ready for Phase 4 planning
+Last session: 2026-02-06
+Stopped at: Completed 04-01-PLAN.md - timer infrastructure and low speed logic
 Resume file: None
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-03 (Phase 3 verified)*
+*Last updated: 2026-02-06 (04-01 complete)*
