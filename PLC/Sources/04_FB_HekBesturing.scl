@@ -354,6 +354,7 @@ BEGIN
             ELSIF #i_PBV_Trigger THEN
                 // PBV > VS: PBV can interrupt VS_PAUSE (statemachine.mmd line 49)
                 #m_Toestand := "DB_States".STATE_PBV_RETRACT;
+                #m_PBV_Retracting := FALSE;  // Start fresh - pause phase first
             ELSIF NOT #i_VS_Trigger THEN
                 // Beam cleared - wait for resume delay (TMR-04)
                 IF #m_VS_ResumeDelayDone THEN
