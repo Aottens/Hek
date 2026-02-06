@@ -38,10 +38,12 @@ See: .planning/milestones/v1.0-ROADMAP.md
   3. Tester can walk through all 9 states with clear expected motor/alarm behavior
   4. Tester can verify all timer behaviors with documented trigger conditions and durations
   5. Tester can record Pass/Fail and notes in Remarks column for each test
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md - Document structure with I/O and State Machine sections
+- [ ] 05-02-PLAN.md - Control Behavior and Timer Behavior sections
+- [ ] 05-03-PLAN.md - Edge Cases and Safety sections with traceability
 
 ### Phase 6: FDS Update
 **Goal**: FDS v0.3 accurately reflects implemented behavior including edge cases
@@ -68,7 +70,7 @@ Plans:
 | 2. Safety Core | v1.0 | 2/2 | Complete | 2026-02-03 |
 | 3. State Machine | v1.0 | 3/3 | Complete | 2026-02-03 |
 | 4. Integration | v1.0 | 2/2 | Complete | 2026-02-06 |
-| 5. FAT Document | v1.1 | 0/? | Not started | - |
+| 5. FAT Document | v1.1 | 0/3 | Planned | - |
 | 6. FDS Update | v1.1 | 0/? | Not started | - |
 
 ---
