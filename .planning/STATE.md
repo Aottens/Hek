@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 5 of 6 (FAT Document)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-06 - Completed 05-01-PLAN.md
+Last activity: 2026-02-06 - Completed 05-02-PLAN.md
 
-Progress: [##########] 100% v1.0 | [##........] 20% v1.1
+Progress: [##########] 100% v1.0 | [####......] 40% v1.1
 
 ## Performance Metrics
 
@@ -50,6 +50,12 @@ All key decisions documented in PROJECT.md. Patterns from v1.0:
 - NC sensor tests include expected value AND meaning
 - PBV_RETRACT split into 08a (pause) and 08b (retract) phases
 
+**v1.1 Decisions (05-02):**
+- Control test IDs: CTL-XX with sub-letters (a,b,c) for related steps
+- Timer test IDs: TMR-XX with sub-letters for test sequences
+- Edge detection explicitly stated in all control tests
+- Timer parameter reference table added for tester convenience
+
 ### Pending Todos
 
 None - starting fresh milestone.
@@ -61,9 +67,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 05-01-PLAN.md
-Resume with: /gsd:execute-phase 05-02
+Stopped at: Completed 05-02-PLAN.md
+Resume with: /gsd:execute-phase 05-03
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-06 (05-01 FAT I/O and State Machine complete)*
+*Last updated: 2026-02-06 (05-02 FAT Control and Timer tests complete)*
