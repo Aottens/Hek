@@ -81,7 +81,7 @@ None.
 
 Last session: 2026-02-06
 Stopped at: Completed 05-03-PLAN.md (Phase 5 complete)
-Resume with: /gsd:execute-phase (Phase 6)
+Resume with: /gsd:plan-phase 6
 
 ---
 *State initialized: 2026-02-02*
