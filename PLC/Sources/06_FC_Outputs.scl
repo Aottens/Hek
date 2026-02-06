@@ -13,7 +13,7 @@
 
 FUNCTION "FC_Outputs" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 0.2
 
    VAR_INPUT
       i_HuidigeToestand : Int;       // Huidige toestand van FB_HekBesturing
@@ -31,13 +31,28 @@ VERSION : 0.1
    END_VAR
 
 BEGIN
-    // Stub implementatie - directe doorgifte
-    // Volledige output logica in Phase 4
-    // Hier kunnen interlock checks en fail-safe logica worden toegevoegd
+    // =========================================================================
+    // OUT-05: Motor outputs mutually exclusive (defensive check)
+    // =========================================================================
+    // Defense in depth: Even if FB sends invalid combination, FC blocks BOTH
+    // This catches any logic bugs in state machine that could damage motor
+    IF #i_MS_Open AND #i_MS_Dicht THEN
+        // SAFETY: Both requested = bug in FB, fail-safe -> stop motor
+        #q_MS_Open := FALSE;
+        #q_MS_Dicht := FALSE;
+        #q_MS_LaagToeren := FALSE;  // Also disable low speed for safety
+    ELSE
+        // Normal operation - pass through commands
+        #q_MS_Open := #i_MS_Open;
+        #q_MS_Dicht := #i_MS_Dicht;
+        #q_MS_LaagToeren := #i_MS_LaagToeren;
+    END_IF;
 
-    #q_MS_Open := #i_MS_Open;
-    #q_MS_Dicht := #i_MS_Dicht;
-    #q_MS_LaagToeren := #i_MS_LaagToeren;
+    // =========================================================================
+    // OUT-04: Alarm output (fail-safe: 0 = hek dicht = alarm active)
+    // =========================================================================
+    // FB computes: TRUE when not in IDLE_DICHT
+    // FC passes through - fail-safe is inherent (PLC off = output 0 = alarm on)
     #q_AlarmKerk := #i_AlarmKerk;
 
 END_FUNCTION
