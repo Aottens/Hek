@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 5 of 6 (FAT Document)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-02-06 - v1.1 roadmap created
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-06 - Completed 05-01-PLAN.md
 
-Progress: [##########] 100% v1.0 | [..........] 0% v1.1
+Progress: [##########] 100% v1.0 | [##........] 20% v1.1
 
 ## Performance Metrics
 
@@ -45,6 +45,11 @@ All key decisions documented in PROJECT.md. Patterns from v1.0:
 - Priority masking: FAULT > PBV > VS with AND NOT cascade
 - TONR for pausable timers, TON for fixed delays
 
+**v1.1 Decisions (05-01):**
+- FAT test IDs: IO-INP-XX, IO-OUT-XX, SM-STATE-XX, SM-TRANS-XX
+- NC sensor tests include expected value AND meaning
+- PBV_RETRACT split into 08a (pause) and 08b (retract) phases
+
 ### Pending Todos
 
 None - starting fresh milestone.
@@ -56,9 +61,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: v1.1 roadmap created
-Resume with: /gsd:plan-phase 5
+Stopped at: Completed 05-01-PLAN.md
+Resume with: /gsd:execute-phase 05-02
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-06 (v1.1 roadmap created)*
+*Last updated: 2026-02-06 (05-01 FAT I/O and State Machine complete)*
