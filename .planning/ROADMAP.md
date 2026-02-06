@@ -75,10 +75,11 @@ Plans:
   2. Low speed timer pauses on stop and resets on direction change
   3. Alarm output inverted correctly (q_AlarmKerk = 0 when gate closed)
   4. All timer sequences execute with configurable durations from DB_Config
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — Timer infrastructure and low speed logic (TONR timers, direction change detection)
+- [ ] 04-02-PLAN.md — VS resume delay, PBV pause timer, FC_Outputs mutual exclusion
 
 ## Progress
 
@@ -90,7 +91,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation | 2/2 | Complete | 2026-02-03 |
 | 2. Safety Core | 2/2 | Complete | 2026-02-03 |
 | 3. State Machine | 3/3 | Complete | 2026-02-03 |
-| 4. Integration | 0/? | Not started | - |
+| 4. Integration | 0/2 | Planned | - |
 
 ---
 *Roadmap created: 2026-02-02*
@@ -101,4 +102,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 *Phase 2 completed: 2026-02-03*
 *Phase 3 planned: 2026-02-03*
 *Phase 3 completed: 2026-02-03*
+*Phase 4 planned: 2026-02-06*
 *Coverage: 42/42 v1 requirements mapped*
